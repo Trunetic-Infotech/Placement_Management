@@ -1,0 +1,27 @@
+// // middleware/recruiterUploads.js
+// import multer from "multer";
+// import { CloudinaryStorage } from "multer-storage-cloudinary";
+// import cloudinary from "../middleware/cloudinary.js";
+
+// const recruiterStorage = new CloudinaryStorage({
+//   cloudinary,
+//   params: async (req, file) => {
+//     let folder = "Recruiter_Uploads";
+//     if (file.fieldname === "company_logo") folder = "Company_Logos";
+//     if (file.fieldname === "hr_photo") folder = "HR_Photos";
+
+//     return {
+//       folder,
+//       format: file.mimetype.split("/")[1] || "jpg",
+//       public_id: `${file.fieldname}_${Date.now()}`,
+//     };
+//   },
+// });
+
+// export const uploadRecruiterFiles = multer({
+//   storage: recruiterStorage,
+//   limits: { fileSize: 10 * 1024 * 1024 },
+// }).fields([
+//   { name: "company_logo", maxCount: 1 },
+//   { name: "hr_photo", maxCount: 1 },
+// ]);
