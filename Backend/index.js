@@ -4,6 +4,10 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import dotenv, { config } from "dotenv";
 import ConnectDB from "./config/db.js";
+import adminRoutes from "./Router/adminRoutes.js";
+import studentRoutes from "./Router/studentRoutes.js";
+import recruiterRoutes from "./Router/recruiterRoutes.js";
+import companyRoutes from "./Router/companyRoutes.js";
 
 dotenv.config();
 
@@ -28,6 +32,11 @@ app.use(
 );
 
 app.use(morgan("dev"));
+
+app.use("/api/v1", adminRoutes);
+app.use("/api/v1", studentRoutes);
+app.use("/api/v1", recruiterRoutes);
+app.use("/api/v1", companyRoutes);
 
 app.get("/", (req, res) => {
   res.send("<h1>SuccessFully Connected</h1>");
