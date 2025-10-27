@@ -17,31 +17,27 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Load user from localStorage on first render
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("loggedInUser"));
     if (savedUser) setUser(savedUser);
     setLoading(false);
   }, []);
 
-  // ✅ Save user after login
   const handleLogin = ({ email, role }) => {
     const userData = { email, role };
     localStorage.setItem("loggedInUser", JSON.stringify(userData));
     setUser(userData);
   };
 
-  // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("loggedInUser");
     setUser(null);
   };
 
-  // ✅ Protected Route Wrapper
   const ProtectedRoute = ({ children, allowedRoles }) => {
     if (loading) return null;
-    if (!user) return <Navigate to="/login" />;
-    if (!allowedRoles.includes(user.role)) return <Navigate to="/login" />;
+    if (!user) return <Navigate to="/login" replace />;
+    if (!allowedRoles.includes(user.role)) return <Navigate to="/login" replace />;
     return React.cloneElement(children, { onLogout: handleLogout, user });
   };
 
@@ -56,7 +52,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Redirect to dashboard based on role */}
+        {/* Redirect root based on role */}
         <Route
           path="/"
           element={
@@ -78,12 +74,13 @@ function App() {
           }
         />
 
+        {/* Auth pages */}
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Role-based dashboards */}
+        {/* Dashboards */}
         <Route
-          path="/student"
+          path="/student/*"
           element={
             <ProtectedRoute allowedRoles={["student"]}>
               <StudentDashboard />
@@ -91,7 +88,7 @@ function App() {
           }
         />
         <Route
-          path="/placementOfficer"
+          path="/placementOfficer/*"
           element={
             <ProtectedRoute allowedRoles={["placementOfficer"]}>
               <PlacementOfficerDashboard />
@@ -99,21 +96,26 @@ function App() {
           }
         />
         <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/recruiter"
+          path="/recruiter/*"
           element={
             <ProtectedRoute allowedRoles={["recruiter"]}>
               <RecruiterDashboard />
             </ProtectedRoute>
           }
         />
+
+        {/* Admin dashboard with nested routing */}
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch-all: redirect unknown routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

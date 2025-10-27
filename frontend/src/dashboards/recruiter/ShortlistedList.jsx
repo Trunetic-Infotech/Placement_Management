@@ -7,17 +7,15 @@ function ShortlistedList() {
   const recruiter = JSON.parse(localStorage.getItem("loggedRecruiter")) || {};
 
   useEffect(() => {
-    // Load recruiter decisions
-    const allDecisions = JSON.parse(localStorage.getItem("recruiterDecisions")) || [];
+    // ✅ Get all applications stored globally
+    const allApplications = JSON.parse(localStorage.getItem("studentApplications")) || [];
 
-    // 🟢 Filter only shortlisted applications for this recruiter’s company
-    const filtered = allDecisions.filter(
-  (app) =>
-    app.decision === "Shortlisted" &&
-    app.company?.toLowerCase() === recruiter.company?.toLowerCase() &&
-    app.student
-);
-
+    // ✅ Filter shortlisted applications only for this recruiter’s company
+    const filtered = allApplications.filter(
+      (app) =>
+        app.status === "Shortlisted" &&
+        app.company?.toLowerCase() === recruiter.company?.toLowerCase()
+    );
 
     setShortlisted(filtered);
   }, [recruiter.company]);

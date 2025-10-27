@@ -9,42 +9,46 @@ function LoginPage({ onLogin }) {
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const userData = { email, role };
-  localStorage.setItem("loggedInUser", JSON.stringify(userData));
-  onLogin(userData);
+    const userData = { email, role };
+    localStorage.setItem("loggedInUser", JSON.stringify(userData));
+    onLogin(userData);
 
-  if (role === "student") navigate("/student");
-  else if (role === "placementOfficer") navigate("/placementOfficer");
-  else if (role === "admin") navigate("/admin");
-  else if (role === "recruiter") navigate("/recruiter");
-};
-
-
+    if (role === "student") navigate("/student");
+    else if (role === "placementOfficer") navigate("/placementOfficer");
+    else if (role === "admin") navigate("/admin");
+    else if (role === "recruiter") navigate("/recruiter");
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
+      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-md w-80 md:w-96">
+        <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800 text-center">
           Dashboard Login
         </h2>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && (
+          <p className="text-red-500 mb-4 text-sm md:text-base">{error}</p>
+        )}
 
         <form onSubmit={handleLogin} className="space-y-4">
-          {/* <div>
-            <label className="block text-gray-700 mb-2">Email</label>
+          <div>
+            <label className="block text-gray-700 mb-2 text-sm md:text-base">
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 md:px-4 py-2 md:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              // required
             />
           </div>
 
-          <div>
+          {/* Password field - commented out but visible in code */}
+          {/* <div>
             <label className="block text-gray-700 mb-2">Password</label>
             <input
               type="password"
@@ -56,11 +60,13 @@ function LoginPage({ onLogin }) {
           </div> */}
 
           <div>
-            <label className="block text-gray-700 mb-2">Role</label>
+            <label className="block text-gray-700 mb-2 text-sm md:text-base">
+              Role
+            </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 md:px-4 py-2 md:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
             >
               <option value="admin">Admin</option>
               <option value="placementOfficer">Placement Officer</option>
@@ -71,13 +77,13 @@ function LoginPage({ onLogin }) {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-2.5 md:py-3 rounded-lg hover:bg-blue-700 transition text-sm md:text-base font-medium"
           >
             Login
           </button>
         </form>
 
-        <div className="flex justify-between mt-4 text-gray-500 text-sm">
+        <div className="flex justify-between mt-4 text-gray-500 text-xs md:text-sm">
           <a href="#" className="text-blue-600 hover:underline">
             Forgot Password?
           </a>

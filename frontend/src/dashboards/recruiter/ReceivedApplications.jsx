@@ -14,7 +14,8 @@ function ReceivedApplications() {
     // Filter applications for this recruiter's company and status
     const forwarded = savedApplications.filter(
       (app) =>
-        app.status === "Forwarded to Recruiter" &&
+        (app.status === "Forwarded to Recruiter" ||
+          app.status === "Reviewed by Recruiter") &&
         app.company === recruiter.company
     );
 
@@ -40,25 +41,25 @@ function ReceivedApplications() {
 
   // Handle recruiter decision
   const handleDecision = (id, decision) => {
-    const updated = applications.map((app) =>
-      app.id === id ? { ...app, decision } : app
-    );
-    setApplications(updated);
+  const updated = applications.map((app) =>
+    app.id === id ? { ...app, decision, status: "Reviewed by Recruiter" } : app
+  );
+  setApplications(updated);
 
-    // Update global studentApplications for student view
-    const allApps =
-      JSON.parse(localStorage.getItem("studentApplications")) || [];
-    const newAllApps = allApps.map((app) =>
-      app.id === id ? { ...app, decision } : app
-    );
-    localStorage.setItem("studentApplications", JSON.stringify(newAllApps));
+  // Update global studentApplications for student view
+  const allApps = JSON.parse(localStorage.getItem("studentApplications")) || [];
+  const newAllApps = allApps.map((app) =>
+    app.id === id ? { ...app, decision, status: "Reviewed by Recruiter" } : app
+  );
+  localStorage.setItem("studentApplications", JSON.stringify(newAllApps));
 
-    // ✅ Save in recruiterDecisions_{company} for persistence
-    localStorage.setItem(
-      `recruiterDecisions_${recruiter.company}`,
-      JSON.stringify(updated)
-    );
-  };
+  // ✅ Save in recruiterDecisions_{company} for persistence
+  localStorage.setItem(
+    `recruiterDecisions_${recruiter.company}`,
+    JSON.stringify(updated)
+  );
+};
+
 
   // Handle interview date
   const handleInterviewDate = (id, date) => {
