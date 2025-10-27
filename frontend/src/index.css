@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* NUCLEAR FIX */
+#root {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: none !important;
+  background-color: #f3f4f6 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+body {
+  background-color: #f3f4f6 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+html {
+  background-color: #f3f4f6 !important;
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+/* Ensure all containers are full width */
+div {
+  max-width: none !important;
+}
