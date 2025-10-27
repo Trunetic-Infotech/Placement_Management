@@ -78,3 +78,48 @@ CREATE TABLE company_details (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+
+CREATE TABLE job_postings (
+  job_id INT AUTO_INCREMENT PRIMARY KEY,
+  recruiter_id INT NOT NULL,
+  company_id INT NOT NULL,
+  job_title VARCHAR(255) NOT NULL,
+  job_type ENUM('Full-Time','Part-Time','Internship','Contract') NOT NULL,
+  work_mode ENUM('Onsite','Hybrid','Remote') NOT NULL,
+  job_location VARCHAR(255) NOT NULL,
+  salary_range VARCHAR(100) NOT NULL,
+  experience_required VARCHAR(100) NOT NULL,
+  skills_required TEXT NOT NULL,
+  qualification_required VARCHAR(255) NOT NULL,
+  job_description TEXT NOT NULL,
+  openings INT NOT NULL,
+  application_deadline DATE NOT NULL,
+  posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('Active','Closed','Pending') NOT NULL,
+  job_template_photo VARCHAR(500) NOT NULL
+); 
+
+
+CREATE TABLE job_applications (
+  application_id INT AUTO_INCREMENT PRIMARY KEY,
+  job_id INT NOT NULL,
+  student_id INT NOT NULL,
+  full_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone_number VARCHAR(20) NOT NULL,
+  resume_url VARCHAR(500) NOT NULL,
+  cover_letter TEXT,
+  portfolio_url VARCHAR(500),
+  linkedin_url VARCHAR(500),
+  github_url VARCHAR(500),
+  applied_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('Pending', 'Reviewed', 'Shortlisted', 'Rejected', 'Hired') DEFAULT 'Pending',
+  
+  FOREIGN KEY (job_id) REFERENCES job_postings(job_id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES student(student_id) ON DELETE CASCADE,
+  
+  INDEX idx_job_id (job_id),
+  INDEX idx_student_id (student_id),
+  INDEX idx_status (status)
+);
