@@ -106,11 +106,19 @@ export const getApplicationsByStudent = async (req, res) => {
   }
 };
 
-// 🟧 Update Application Status
+// 🟧 Update Application Status (Recruiter Only)
 export const updateApplicationStatus = async (req, res) => {
   try {
+    // ✅ Allow only recruiter
+    if (req.user?.role !== "recruiter") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Only recruiters can update status.",
+      });
+    }
+
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, status_message } = req.body;
 
     const validStatuses = [
       "Pending",
@@ -118,24 +126,57 @@ export const updateApplicationStatus = async (req, res) => {
       "Shortlisted",
       "Rejected",
       "Hired",
+      "Ongoing",
     ];
 
-    if (!validStatuses.includes(status))
+    // ✅ Validate status if provided
+    if (status && !validStatuses.includes(status)) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid status" });
+        .json({ success: false, message: "Invalid status value." });
+    }
 
+    // ✅ Prepare fields dynamically
+    const updateFields = [];
+    const values = [];
+
+    if (status) {
+      updateFields.push("status = ?");
+      values.push(status);
+    }
+
+    if (status_message) {
+      updateFields.push("status_message = ?");
+      values.push(status_message);
+    }
+
+    if (updateFields.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No fields provided for update." });
+    }
+
+    values.push(id);
+
+    // ✅ Update query
     const [result] = await job_applications.query(
-      "UPDATE job_applications SET status = ? WHERE application_id = ?",
-      [status, id]
+      `UPDATE job_applications SET ${updateFields.join(
+        ", "
+      )} WHERE application_id = ?`,
+      values
     );
 
-    if (result.affectedRows === 0)
+    if (result.affectedRows === 0) {
       return res
         .status(404)
-        .json({ success: false, message: "Application not found" });
+        .json({ success: false, message: "Application not found." });
+    }
 
-    res.json({ success: true, message: "Status updated successfully" });
+    res.json({
+      success: true,
+      message: "Application status updated successfully.",
+      updatedFields: { status, status_message },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
