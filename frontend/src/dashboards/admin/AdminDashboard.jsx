@@ -16,8 +16,8 @@ function DashboardHome() {
   ];
 
   const Recruiters = [
-    { id: 1, name: "Mr. A", email: "a@school.com", subject: "Math" },
-    { id: 2, name: "Ms. B", email: "b@school.com", subject: "Physics" },
+    { id: 1, name: "Mr. A", email: "a@school.com", company: "Math" },
+    { id: 2, name: "Ms. B", email: "b@school.com", company: "Physics" },
   ];
 
   const jobs = [
@@ -92,15 +92,15 @@ function DashboardHome() {
                 <tr>
                   <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Name</th>
                   <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Email</th>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Subject</th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Company</th>
                 </tr>
               </thead>
               <tbody>
-                {Recruiters.map((teacher) => (
-                  <tr key={teacher.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{teacher.name}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{teacher.email}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{teacher.subject}</td>
+                {Recruiters.map((recruiter) => (
+                  <tr key={recruiter.id} className="border-b hover:bg-gray-50">
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{recruiter.name}</td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{recruiter.email}</td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{recruiter.company}</td>
                   </tr>
                 ))}
               </tbody>

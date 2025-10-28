@@ -8,6 +8,7 @@ function RecruiterSidebar({ onLogout }) {
 
   const tabs = [
     { name: "Dashboard Home", path: "/recruiter" },
+    {name:"Manage Profile", path:"/recruiter/profile"},
     { name: "Add Job", path: "/recruiter/add-job" },
     { name: "Received Applications", path: "/recruiter/received-applications" },
     { name: "Shortlisted Candidates", path: "/recruiter/shortlisted-list" },
