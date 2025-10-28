@@ -101,14 +101,18 @@ export const studentLogin = async (req, res) => {
     console.log(rows);
 
     if (rows.length === 0)
-      return res.status(404).json({ message: "User Not Found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User Not Found" });
 
     const foundStudent = rows[0];
     console.log(foundStudent);
 
     const isMatch = await bcrypt.compare(password, foundStudent.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
 
     const token = jwt.sign(
       {
@@ -121,6 +125,7 @@ export const studentLogin = async (req, res) => {
     );
 
     res.status(200).json({
+      success: true,
       message: "Login successful",
       token,
       student: {

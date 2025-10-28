@@ -91,21 +91,26 @@ export const registerRecruiter = async (req, res) => {
 // 🟩 RECRUITER LOGIN CONTROLLER LOGIC CODE
 export const recruiterLogin = async (req, res) => {
   try {
-    const { company_email, password } = req.body;
+    const { email, password } = req.body;
+    console.log(req.body);
 
     const [rows] = await recruiter.query(
       "SELECT * FROM recruiter WHERE company_email = ?",
-      [company_email]
+      [email]
     );
 
     if (rows.length === 0)
-      return res.status(404).json({ message: "Recruiter not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Recruiter not found" });
 
     const foundRecruiter = rows[0];
 
     const isMatch = await bcrypt.compare(password, foundRecruiter.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     const token = jwt.sign(
       {
         recruiter_id: foundRecruiter.recruiter_id,
@@ -117,6 +122,7 @@ export const recruiterLogin = async (req, res) => {
     );
 
     res.status(200).json({
+      success: true,
       message: "Login successful",
       token,
       recruiter: {

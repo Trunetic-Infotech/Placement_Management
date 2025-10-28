@@ -129,7 +129,9 @@ export const adminLogin = async (req, res) => {
       email,
     ]);
     if (rows.length === 0) {
-      return res.status(404).json({ message: "Invalid email or password" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     const foundAdmin = rows[0];
@@ -137,7 +139,9 @@ export const adminLogin = async (req, res) => {
     // ✅ Check password
     const isMatch = await bcrypt.compare(password, foundAdmin.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     // ✅ Generate JWT Token
@@ -153,6 +157,7 @@ export const adminLogin = async (req, res) => {
 
     // ✅ Response
     res.status(200).json({
+      success: true,
       message: "Login successful",
       token,
       admin: {

@@ -35,6 +35,8 @@ function App() {
   };
 
   const ProtectedRoute = ({ children, allowedRoles }) => {
+    console.log(children, allowedRoles);
+    
     if (loading) return null;
     if (!user) return <Navigate to="/login" replace />;
     if (!allowedRoles.includes(user.role)) return <Navigate to="/login" replace />;
@@ -48,6 +50,9 @@ function App() {
       </div>
     );
   }
+
+  console.log(user);
+  
 
   return (
     <Router>
