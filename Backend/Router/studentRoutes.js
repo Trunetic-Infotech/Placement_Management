@@ -16,17 +16,23 @@ import { multiUpload } from "../middleware/multiUpload.js";
 import { uploadImage } from "../middleware/uploadImage.js";
 import { uploadResume } from "../middleware/uploadResume.js";
 import { uploadCertificate } from "../middleware/uploadCertificate.js";
+import { adminAuthMiddleware } from "../middleware/adminAuthMiddleware.js";
 
 const router = express.Router();
 
 // 🟩 Register Student (photo + resume + certificate)
-router.post("/register", multiUpload, registerStudent);
+router.post(
+  "/register/student",
+  multiUpload,
+  adminAuthMiddleware,
+  registerStudent
+);
 
 router.post("/login/student", studentLogin);
 
-router.get("/getAllStudents", getAllStudents);
+router.get("/getAllStudents", adminAuthMiddleware, getAllStudents);
 
-router.get("/getStudentId/:id", getStudentById);
+router.get("/getStudentId/:id", adminAuthMiddleware, getStudentById);
 
 router.put("/studentDetailsUpdate/:id", updateStudentDetails);
 
@@ -40,7 +46,7 @@ router.put(
   studentUploadCertificate
 );
 
-router.delete("/studentDelete/:id", deleteStudent);
+router.delete("/studentDelete/:id", adminAuthMiddleware, deleteStudent);
 
 router.post("/reset-password/:id", resetStudentPassword);
 

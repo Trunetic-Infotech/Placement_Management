@@ -37,6 +37,7 @@ import {
   uploadHrPhoto,
   uploadRecruiterFiles,
 } from "../middleware/recruiterMulter.js"; // ✅ Correct import
+import { adminAuthMiddleware } from "../middleware/adminAuthMiddleware.js";
 
 const router = express.Router();
 
@@ -46,16 +47,21 @@ const router = express.Router();
  */
 
 // 🧩 Register recruiter (with file upload)
-router.post("/register/recruiter", uploadRecruiterFiles, registerRecruiter);
+router.post(
+  "/register/recruiter",
+  uploadRecruiterFiles,
+  adminAuthMiddleware,
+  registerRecruiter
+);
 
 // 🔐 Recruiter login
 router.post("/login", recruiterLogin);
 
 // 📋 Get all recruiters
-router.get("/all", getAllRecruiters);
+router.get("/allRecruiter", adminAuthMiddleware, getAllRecruiters);
 
 // 🔎 Get recruiter by ID
-router.get("/:id", getRecruiterById);
+router.get("/:id", adminAuthMiddleware, getRecruiterById);
 
 // ✏️ Update recruiter details (text fields)
 router.put("/update/:id", updateRecruiterDetails);
@@ -67,7 +73,7 @@ router.put("/update-logo/:id", uploadCompanyLogo, updateCompanyLogo);
 router.put("/update-hr-photo/:id", uploadHrPhoto, updateHrPhoto);
 
 // Delete Recruiter ID
-router.delete("/deleteRecruiter/:id", deleteRecruiter);
+router.delete("/deleteRecruiter/:id", adminAuthMiddleware, deleteRecruiter);
 
 // 🟩 Reset Password
 router.post("/reset-password/recuruiter/:id", resetRecruiterPassword);
