@@ -8,18 +8,53 @@ function LoginPage({ onLogin }) {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+ const handleLogin = (e) => {
+  e.preventDefault();
 
-    const userData = { email, role };
+  if (role === "recruiter") {
+    const recruiters = JSON.parse(localStorage.getItem("recruiters")) || [];
+    const recruiter = recruiters.find((r) => r.companyEmail === email);
+
+    if (!recruiter) {
+      alert("Recruiter not found! Please check your email or register first.");
+      return;
+    }
+
+    // Store full recruiter info in loggedInUser
+    const userData = { ...recruiter, role: "recruiter" };
     localStorage.setItem("loggedInUser", JSON.stringify(userData));
     onLogin(userData);
+    navigate("/recruiter");
+    return;
+  }
 
-    if (role === "student") navigate("/student");
-    else if (role === "placementOfficer") navigate("/placementOfficer");
-    else if (role === "admin") navigate("/admin");
-    else if (role === "recruiter") navigate("/recruiter");
-  };
+  if (role === "student") {
+    const students = JSON.parse(localStorage.getItem("students")) || [];
+    const student = students.find((s) => s.email === email);
+
+    if (!student) {
+      alert("Student not found! Please check your email or register first.");
+      return;
+    }
+
+    // ✅ Store full student info in loggedInUser
+    const userData = { ...student, role: "student" };
+    localStorage.setItem("loggedInUser", JSON.stringify(userData));
+    onLogin(userData);
+    navigate("/student");
+    return;
+  }
+
+  // For other roles
+  const userData = { email, role };
+  localStorage.setItem("loggedInUser", JSON.stringify(userData));
+  onLogin(userData);
+
+  if (role === "placementOfficer") navigate("/placementOfficer");
+  else if (role === "admin") navigate("/admin");
+};
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">

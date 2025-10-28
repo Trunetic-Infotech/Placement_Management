@@ -2,55 +2,52 @@ import React, { useState, useEffect } from "react";
 
 function StudentProfileForm() {
   const [formData, setFormData] = useState({
-    studentId: "",
     rollNo: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
-    dob: "",
     department: "",
     course: "",
     cgpa: "",
     skills: "",
     profileImage: "",
     resume: "",
+    certificate: "",
   });
 
-  // Load student profile from localStorage on mount
+  // Load student profile from localStorage
   useEffect(() => {
-    const savedProfile = JSON.parse(localStorage.getItem("studentProfile")) || {};
-    setFormData({ ...formData, ...savedProfile });
+    const students = JSON.parse(localStorage.getItem("students")) || [];
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || {};
+    const student = students.find((s) => s.email === loggedInUser.email);
+    if (student) setFormData(student);
   }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    if ((name === "profileImage" || name === "resume") && files && files[0]) {
+    if ((name === "profileImage" || name === "resume" || name === "certificate") && files && files[0]) {
       const reader = new FileReader();
       reader.onload = (ev) => {
         setFormData({ ...formData, [name]: ev.target.result });
       };
       reader.readAsDataURL(files[0]);
-    } else {
+    } else if (["skills"].includes(name)) {
       setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Save updated profile for student
-    localStorage.setItem("studentProfile", JSON.stringify(formData));
-
-    // Update the student in admin’s list
     const students = JSON.parse(localStorage.getItem("students")) || [];
-    const index = students.findIndex(s => s.rollNo === formData.rollNo || s.studentId === formData.studentId);
+    const index = students.findIndex((s) => s.email === formData.email);
+
     if (index !== -1) {
       students[index] = { ...students[index], ...formData };
       localStorage.setItem("students", JSON.stringify(students));
+      alert("Profile updated successfully!");
     }
-
-    alert("Profile saved successfully!");
   };
 
   return (
@@ -58,27 +55,29 @@ function StudentProfileForm() {
       <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
         {[
-          { label: "Student ID", name: "studentId", type: "text" },
-          { label: "Roll No", name: "rollNo", type: "text" },
-          { label: "Full Name", name: "name", type: "text" },
-          { label: "Email", name: "email", type: "email" },
-          { label: "Phone Number", name: "phone", type: "text" },
-          { label: "Date of Birth", name: "dob", type: "date" },
-          { label: "Department", name: "department", type: "text" },
-          { label: "Course", name: "course", type: "text" },
-          { label: "CGPA", name: "cgpa", type: "number", step: "0.01" },
-          { label: "Skills", name: "skills", type: "text" },
+          { label: "Roll No", name: "rollNo", editable: false },
+          { label: "First Name", name: "firstName", editable: false },
+          { label: "Last Name", name: "lastName", editable: false },
+          { label: "Email", name: "email", editable: false },
+          { label: "Phone", name: "phone", editable: false },
+          { label: "Department", name: "department", editable: false },
+          { label: "Course", name: "course", editable: false },
+          { label: "CGPA", name: "cgpa", editable: false },
+          { label: "Skills", name: "skills", editable: true },
         ].map((field) => (
           <div key={field.name}>
             <label className="block mb-1 font-medium">{field.label}</label>
             <input
-              type={field.type}
+              type="text"
               name={field.name}
               value={formData[field.name]}
               onChange={handleChange}
-              className="border px-3 py-2 rounded-lg w-full"
-              step={field.step || undefined}
+              className={`border px-3 py-2 rounded-lg w-full ${
+                field.editable ? "" : "bg-gray-100 cursor-not-allowed"
+              }`}
+              readOnly={!field.editable}
             />
           </div>
         ))}
@@ -124,12 +123,34 @@ function StudentProfileForm() {
           )}
         </div>
 
+        {/* Certificate */}
+        <div>
+          <label className="block mb-1 font-medium">Certificate</label>
+          <input
+            type="file"
+            name="certificate"
+            accept=".pdf,.doc,.docx,.jpg,.png"
+            onChange={handleChange}
+            className="border px-3 py-2 rounded-lg w-full"
+          />
+          {formData.certificate && (
+            <a
+              href={formData.certificate}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline mt-2 block"
+            >
+              View Certificate
+            </a>
+          )}
+        </div>
+
         <div className="md:col-span-2">
           <button
             type="submit"
             className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
-            Save Profile
+            Save Changes
           </button>
         </div>
       </form>
