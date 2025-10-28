@@ -1,133 +1,170 @@
 import React, { useState, useEffect } from "react";
-import RecruiterSidebar from "./RecruiterSidebar";
-import ReceivedApplications from "./ReceivedApplications";
-import ShortlistedList from "./ShortlistedList";
-import FinalResults from "./FinalResults";
 
-function RecruiterDashboard({ onLogout }) {
-  const [activeTab, setActiveTab] = useState(() => {
-    const saved = localStorage.getItem("recruiterActiveTab");
-    return saved && saved !== "undefined" && saved !== "null"
-      ? saved
-      : "dashboard";
+function RecruiterDashboard() {
+  const [recruiter, setRecruiter] = useState({
+    recruiterId: "",
+    companyName: "",
+    companyEmail: "",
+    password: "",
+    companyAddress: "",
+    hrName: "",
+    hrPhoto: "",
+    jobPosting: "",
+    companyLogo: "",
+    industry: "",
   });
 
+  // 🟢 Load logged recruiter info from localStorage
   useEffect(() => {
-    localStorage.setItem("recruiterActiveTab", activeTab);
-  }, [activeTab]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "loggedRecruiter",
-      JSON.stringify({
-        name: "John Smith",
-        company: "qwwd",
-      })
-    );
+    const loggedRecruiter = JSON.parse(localStorage.getItem("loggedRecruiter"));
+    if (loggedRecruiter) {
+      setRecruiter(loggedRecruiter);
+    }
   }, []);
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
+  // 🟢 Handle changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setRecruiter({ ...recruiter, [name]: value });
   };
 
-  // ✅ Logout Handler
-  const handleLogout = () => {
-    localStorage.removeItem("loggedRecruiter");
-    localStorage.removeItem("recruiterActiveTab");
-    if (onLogout) onLogout(); // redirect to login if parent handles it
-    else window.location.href = "/"; // fallback redirect
+  // 🟢 Save updates (update both loggedRecruiter and recruiters list)
+  const handleUpdate = () => {
+    // Update loggedRecruiter data
+    localStorage.setItem("loggedRecruiter", JSON.stringify(recruiter));
+
+    // Update the recruiter list seen by admin
+    const allRecruiters = JSON.parse(localStorage.getItem("recruiters")) || [];
+    const updatedList = allRecruiters.map((r) =>
+      r.companyEmail === recruiter.companyEmail ? recruiter : r
+    );
+    localStorage.setItem("recruiters", JSON.stringify(updatedList));
+
+    alert("Profile updated successfully!");
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* ✅ Pass the logout handler here */}
-      <RecruiterSidebar
-        activeTab={activeTab}
-        setActiveTab={handleTabChange}
-        onLogout={handleLogout}
-      />
+    <div className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-center">Recruiter Profile</h2>
 
-      <main className="flex-1 p-8">
-        {activeTab === "dashboard" && (
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-800 mb-4">
-              Recruiter Dashboard
-            </h1>
-            <p className="text-gray-600 mb-8">
-              Welcome back, <span className="font-semibold">John Smith</span>!
-              Here’s an overview of your hiring activities and progress.
-            </p>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block font-medium">Recruiter ID</label>
+          <input
+            type="text"
+            name="recruiterId"
+            value={recruiter.recruiterId}
+            readOnly
+            className="border p-2 w-full rounded bg-gray-100"
+          />
+        </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-              <div className="bg-white shadow rounded-xl p-6 text-center">
-                <h2 className="text-2xl font-bold text-blue-600">42</h2>
-                <p className="text-gray-600 mt-1">Total Applications</p>
-              </div>
+        <div>
+          <label className="block font-medium">Company Email</label>
+          <input
+            type="email"
+            name="companyEmail"
+            value={recruiter.companyEmail}
+            readOnly
+            className="border p-2 w-full rounded bg-gray-100"
+          />
+        </div>
 
-              <div className="bg-white shadow rounded-xl p-6 text-center">
-                <h2 className="text-2xl font-bold text-yellow-600">10</h2>
-                <p className="text-gray-600 mt-1">Shortlisted Candidates</p>
-              </div>
+        <div>
+          <label className="block font-medium">Password</label>
+          <input
+            type="password"
+            name="password"
+            value={recruiter.password}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+          />
+        </div>
 
-              <div className="bg-white shadow rounded-xl p-6 text-center">
-                <h2 className="text-2xl font-bold text-green-600">4</h2>
-                <p className="text-gray-600 mt-1">Final Offers Sent</p>
-              </div>
+        <div>
+          <label className="block font-medium">Company Name</label>
+          <input
+            type="text"
+            name="companyName"
+            value={recruiter.companyName}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+          />
+        </div>
 
-              <div className="bg-white shadow rounded-xl p-6 text-center">
-                <h2 className="text-2xl font-bold text-red-600">3</h2>
-                <p className="text-gray-600 mt-1">Positions Open</p>
-              </div>
-            </div>
+        <div>
+          <label className="block font-medium">Company Address</label>
+          <input
+            type="text"
+            name="companyAddress"
+            value={recruiter.companyAddress}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+          />
+        </div>
 
-            {/* Recent Activity Section */}
-            <div className="bg-white p-6 shadow rounded-xl">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Recent Applications
-              </h2>
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="text-left bg-gray-100 text-gray-700">
-                    <th className="p-3">Candidate</th>
-                    <th className="p-3">Position</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-t">
-                    <td className="p-3">Ananya Patel</td>
-                    <td className="p-3">Frontend Developer</td>
-                    <td className="p-3 text-yellow-600 font-medium">
-                      Shortlisted
-                    </td>
-                    <td className="p-3">Oct 20, 2025</td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-3">Rahul Mehta</td>
-                    <td className="p-3">Backend Engineer</td>
-                    <td className="p-3 text-blue-600 font-medium">
-                      Under Review
-                    </td>
-                    <td className="p-3">Oct 18, 2025</td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-3">Sana Khan</td>
-                    <td className="p-3">UI/UX Designer</td>
-                    <td className="p-3 text-green-600 font-medium">Selected</td>
-                    <td className="p-3">Oct 17, 2025</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+        <div>
+          <label className="block font-medium">HR Name</label>
+          <input
+            type="text"
+            name="hrName"
+            value={recruiter.hrName}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+          />
+        </div>
 
-        {activeTab === "received" && <ReceivedApplications />}
-        {activeTab === "shortlisted" && <ShortlistedList />}
-        {activeTab === "results" && <FinalResults />}
-      </main>
+        <div>
+          <label className="block font-medium">HR Photo URL</label>
+          <input
+            type="text"
+            name="hrPhoto"
+            value={recruiter.hrPhoto}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium">Company Logo URL</label>
+          <input
+            type="text"
+            name="companyLogo"
+            value={recruiter.companyLogo}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium">Industry</label>
+          <input
+            type="text"
+            name="industry"
+            value={recruiter.industry}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+          />
+        </div>
+
+        <div className="col-span-2">
+          <label className="block font-medium">Job Posting</label>
+          <textarea
+            name="jobPosting"
+            value={recruiter.jobPosting}
+            onChange={handleChange}
+            className="border p-2 w-full rounded"
+            rows="3"
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={handleUpdate}
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+      >
+        Update Profile
+      </button>
     </div>
   );
 }

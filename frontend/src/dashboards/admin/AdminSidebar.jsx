@@ -6,8 +6,8 @@ function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
   const tabs = [
     { name: "Dashboard", path: "/admin", icon: Home },
     { name: "Manage Students", path: "/admin/students", icon: User },
-    { name: "Manage Placement Officers", path: "/admin/officers", icon: Users },
-    { name: "Manage Jobs", path: "/admin/jobs", icon: Briefcase },
+    { name: "Manage Recruiters", path: "/admin/officers", icon: Users },
+    { name: "Jobs Listed", path: "/admin/jobs", icon: Briefcase },
     
   ];
 

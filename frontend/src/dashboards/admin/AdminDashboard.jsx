@@ -3,8 +3,8 @@ import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import AdminSidebar from "./AdminSidebar";
 import ManageStudents from "./ManageStudents";
-import ManagePlacementOfficer from "./ManagePlacementOfficer";
-import ManageJobs from "./ManageJobs";
+import ManagePlacementOfficer from "./ManageRecruiters";
+import ManageJobs from "./JobsListed";
 
 
 // Dashboard Home Component - Made responsive
@@ -15,7 +15,7 @@ function DashboardHome() {
     { id: 3, name: "Alice Lee", email: "alice@example.com", rollNo: "CS103" },
   ];
 
-  const teachers = [
+  const Recruiters = [
     { id: 1, name: "Mr. A", email: "a@school.com", subject: "Math" },
     { id: 2, name: "Ms. B", email: "b@school.com", subject: "Physics" },
   ];
@@ -26,7 +26,7 @@ function DashboardHome() {
   ];
 
   const totalStudents = students.length;
-  const totalTeachers = teachers.length;
+  const totalRecruiters = Recruiters.length;
   const totalJobs = jobs.length;
   const totalPlacements = 5;
 
@@ -43,8 +43,8 @@ function DashboardHome() {
           <p className="text-2xl md:text-3xl font-bold text-blue-600 mt-2">{totalStudents}</p>
         </div>
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
-          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Teachers</h2>
-          <p className="text-2xl md:text-3xl font-bold text-green-600 mt-2">{totalTeachers}</p>
+          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Recruiters</h2>
+          <p className="text-2xl md:text-3xl font-bold text-green-600 mt-2">{totalRecruiters}</p>
         </div>
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
           <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Jobs</h2>
@@ -83,9 +83,9 @@ function DashboardHome() {
           </div>
         </div>
 
-        {/* Recent Teachers Table */}
+        {/* Recent Recruiters Table */}
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow">
-          <h2 className="text-lg md:text-xl font-semibold mb-4">Recent Teachers</h2>
+          <h2 className="text-lg md:text-xl font-semibold mb-4">Recent Recruiters</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gray-100">
@@ -96,7 +96,7 @@ function DashboardHome() {
                 </tr>
               </thead>
               <tbody>
-                {teachers.map((teacher) => (
+                {Recruiters.map((teacher) => (
                   <tr key={teacher.id} className="border-b hover:bg-gray-50">
                     <td className="py-2 px-2 md:px-4 text-sm md:text-base">{teacher.name}</td>
                     <td className="py-2 px-2 md:px-4 text-sm md:text-base">{teacher.email}</td>

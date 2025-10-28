@@ -59,8 +59,6 @@ function App() {
             user ? (
               user.role === "student" ? (
                 <Navigate to="/student" replace />
-              ) : user.role === "placementOfficer" ? (
-                <Navigate to="/placementOfficer" replace />
               ) : user.role === "admin" ? (
                 <Navigate to="/admin" replace />
               ) : user.role === "recruiter" ? (

@@ -1,29 +1,32 @@
 import React from "react";
 import { LogOut } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-function RecruiterSidebar({ activeTab, setActiveTab, onLogout }) {
+function RecruiterSidebar({ onLogout }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const tabs = [
-    { name: "Dashboard Home", key: "dashboard" },
-    { name: "Received Applications", key: "received" },
-    { name: "Shortlisted Candidates", key: "shortlisted" },
-    { name: "Final Results", key: "results" },
+    { name: "Dashboard Home", path: "/recruiter" },
+    { name: "Add Job", path: "/recruiter/add-job" },
+    { name: "Received Applications", path: "/recruiter/received-applications" },
+    { name: "Shortlisted Candidates", path: "/recruiter/shortlisted-list" },
+    { name: "Final Results", path: "/recruiter/final-results" },
   ];
 
   return (
     <aside className="w-64 h-screen bg-white shadow-lg p-6 flex flex-col justify-between">
-      {/* Tabs */}
       <div>
         <h2 className="text-2xl font-bold mb-6 text-blue-600 text-center">
           Recruiter Panel
         </h2>
-
         <ul className="space-y-3">
           {tabs.map((tab) => (
-            <li key={tab.key}>
+            <li key={tab.path}>
               <button
-                onClick={() => setActiveTab(tab.key)}
+                onClick={() => navigate(tab.path)}
                 className={`w-full text-left px-4 py-2 rounded-lg font-medium transition ${
-                  activeTab === tab.key
+                  location.pathname === tab.path
                     ? "bg-blue-600 text-white"
                     : "text-gray-700 hover:bg-blue-100"
                 }`}
@@ -34,8 +37,6 @@ function RecruiterSidebar({ activeTab, setActiveTab, onLogout }) {
           ))}
         </ul>
       </div>
-
-      {/* Logout */}
       <div>
         <button
           onClick={() => {
