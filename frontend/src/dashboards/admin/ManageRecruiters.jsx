@@ -213,11 +213,14 @@ function ManageRecruiters() {
         <table className="min-w-full border">
           <thead className="bg-gray-100">
             <tr>
-              <th className="py-2 px-4 text-left">Recruiter ID</th>
+              
               <th className="py-2 px-4 text-left">Company</th>
+              <th className="py-2 px-4 text-left">Email</th>
               <th className="py-2 px-4 text-left">HR Name</th>
               <th className="py-2 px-4 text-left">Job Posting</th>
               <th className="py-2 px-4 text-left">Industry</th>
+              <th className="py-2 px-4 text-left">Website URL</th>
+              <th className="py-2 px-4 text-left">HR Photo</th>
               <th className="py-2 px-4 text-left">Logo</th>
               <th className="py-2 px-4 text-left">Actions</th>
             </tr>
@@ -227,9 +230,20 @@ function ManageRecruiters() {
               <tr key={recruiter.id} className="border-b hover:bg-gray-50">
                 
                 <td className="py-2 px-4">{recruiter.companyName}</td>
+                <td className="py-2 px-4">{recruiter.companyEmail}</td>
                 <td className="py-2 px-4">{recruiter.hrName}</td>
                 <td className="py-2 px-4">{recruiter.jobPosting}</td>
                 <td className="py-2 px-4">{recruiter.industryType}</td>
+                <td className="py-2 px-4">{recruiter.websiteUrl}</td>
+                 <td className="py-2 px-4">
+                  {recruiter.hrPhoto && (
+                    <img
+                      src={recruiter.hrPhoto}
+                      alt="Logo"
+                      className="w-10 h-10 object-cover rounded"
+                    />
+                  )}
+                </td>
                 <td className="py-2 px-4">
                   {recruiter.companyLogo && (
                     <img

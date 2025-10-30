@@ -1,23 +1,11 @@
 import React from "react";
-import {
-  Home,
-  User,
-  Briefcase,
-  Users,
-  FileText,
-  LogOut,
-  X,
-  Building,
-} from "lucide-react";
+import { Home, UserCircle, LogOut, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
+function CompanySidebar({ isSidebarOpen, toggleSidebar, onLogout }) {
   const tabs = [
-    { name: "Dashboard", path: "/admin", icon: Home },
-    { name: "Manage Students", path: "/admin/students", icon: User },
-    { name: "Manage Recruiters", path: "/admin/officers", icon: Users },
-    { name: "Manage Company", path: "/admin/company", icon: Building },
-    { name: "Jobs Listed", path: "/admin/jobs", icon: Briefcase },
+    { name: "Dashboard Home", path: "/company", icon: Home },
+    { name: "Company Profile", path: "/company/profile", icon: UserCircle },
   ];
 
   return (
@@ -30,16 +18,18 @@ function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg p-6 flex flex-col transform transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`
+          fixed lg:static inset-y-0 left-0 z-50
+          w-64 h-screen bg-white shadow-lg flex flex-col
+          transform transition-transform duration-300 ease-in-out
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
       >
-        {/* Scrollable Top */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-blue-700">Admin Panel</h2>
+            <h2 className="text-2xl font-bold text-blue-700">Company Panel</h2>
             <button
               onClick={toggleSidebar}
               className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
@@ -47,6 +37,7 @@ function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
               <X size={20} />
             </button>
           </div>
+
           <ul className="space-y-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -54,7 +45,7 @@ function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
                 <li key={tab.path}>
                   <NavLink
                     to={tab.path}
-                    end={tab.path === "/admin"}
+                    end={tab.path === "/company"}
                     onClick={() => window.innerWidth < 1024 && toggleSidebar()}
                     className={({ isActive }) =>
                       `flex items-center gap-3 w-full p-3 rounded-lg transition font-medium ${
@@ -64,7 +55,8 @@ function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
                       }`
                     }
                   >
-                    <Icon size={20} /> <span>{tab.name}</span>
+                    <Icon size={20} />
+                    <span>{tab.name}</span>
                   </NavLink>
                 </li>
               );
@@ -72,11 +64,11 @@ function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
           </ul>
         </div>
 
-        {/* Fixed Logout */}
-        <div className="sticky bottom-0 bg-white pt-4 -mx-6 -mb-6 px-6 pb-6  border-gray-200">
+        {/* Fixed Logout Button */}
+        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6">
           <button
-            onClick={() => onLogout && onLogout()}
-            className="flex items-center gap-3 w-full text-red-600 hover:text-red-700 p-3 rounded-lg transition font-semibold hover:bg-red-50"
+            onClick={onLogout}
+            className="flex items-center gap-3 w-full text-red-600 hover:text-red-700 p-3 rounded-lg font-semibold hover:bg-red-50 transition-colors"
           >
             <LogOut size={20} />
             <span>Logout</span>
@@ -87,4 +79,4 @@ function AdminSidebar({ onLogout, isSidebarOpen, toggleSidebar }) {
   );
 }
 
-export default AdminSidebar;
+export default CompanySidebar;

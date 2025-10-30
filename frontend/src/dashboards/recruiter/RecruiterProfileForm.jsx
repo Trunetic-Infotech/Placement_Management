@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function RecruiterProfileForm({ profile }) {
+function RecruiterProfileForm() {
+  // Dummy recruiter profile data
   const [formData, setFormData] = useState({
+    companyName: "TechNova Solutions",
+    companyEmail: "hr@technova.com",
+    companyAddress: "Bangalore, India",
+    hrName: "Rahul Sharma",
     hrPhoto: "",
     companyLogo: "",
-    jobPosting: "",
-    websiteUrl: "",
+    jobPosting: "Frontend Developer",
+    websiteUrl: "https://technova.com",
+    contactNumber: "+91 9876543210",
+    industryType: "IT Services",
   });
-
-  useEffect(() => {
-    if (profile) {
-      setFormData({
-        hrPhoto: profile.hrPhoto || "",
-        companyLogo: profile.companyLogo || "",
-        jobPosting: profile.jobPosting || "",
-        websiteUrl: profile.websiteUrl || "",
-      });
-    }
-  }, [profile]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -34,20 +30,104 @@ function RecruiterProfileForm({ profile }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Update recruiter in localStorage
-    const recruiters = JSON.parse(localStorage.getItem("recruiters")) || [];
-    const index = recruiters.findIndex(r => r.companyEmail === profile.companyEmail);
-    if (index !== -1) {
-      recruiters[index] = { ...recruiters[index], ...formData };
-      localStorage.setItem("recruiters", JSON.stringify(recruiters));
-      alert("Profile updated successfully!");
-    }
+    alert("Profile updated successfully! (dummy only)");
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-6">Edit Profile</h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="bg-white p-6 rounded-2xl shadow max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold mb-6">Recruiter Profile</h2>
+
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Company Name (readonly) */}
+        <div>
+          <label className="block font-semibold mb-1">Company Name</label>
+          <input
+            type="text"
+            value={formData.companyName}
+            readOnly
+            className="border px-4 py-2 rounded-lg w-full bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Company Email (readonly) */}
+        <div>
+          <label className="block font-semibold mb-1">Company Email</label>
+          <input
+            type="text"
+            value={formData.companyEmail}
+            readOnly
+            className="border px-4 py-2 rounded-lg w-full bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+
+        {/* HR Name (readonly) */}
+        <div>
+          <label className="block font-semibold mb-1">HR Name</label>
+          <input
+            type="text"
+            value={formData.hrName}
+            readOnly
+            className="border px-4 py-2 rounded-lg w-full bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Contact Number (readonly) */}
+        <div>
+          <label className="block font-semibold mb-1">Contact Number</label>
+          <input
+            type="text"
+            value={formData.contactNumber}
+            readOnly
+            className="border px-4 py-2 rounded-lg w-full bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Industry Type (readonly) */}
+        <div>
+          <label className="block font-semibold mb-1">Industry Type</label>
+          <input
+            type="text"
+            value={formData.industryType}
+            readOnly
+            className="border px-4 py-2 rounded-lg w-full bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Company Address (readonly) */}
+        <div>
+          <label className="block font-semibold mb-1">Company Address</label>
+          <input
+            type="text"
+            value={formData.companyAddress}
+            readOnly
+            className="border px-4 py-2 rounded-lg w-full bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+
+        {/* Job Posting (editable) */}
+        <div>
+          <label className="block font-semibold mb-1">Job Posting</label>
+          <input
+            type="text"
+            name="jobPosting"
+            value={formData.jobPosting}
+            onChange={handleChange}
+            className="border px-4 py-2 rounded-lg w-full"
+          />
+        </div>
+
+        {/* Website URL (editable) */}
+        <div>
+          <label className="block font-semibold mb-1">Website URL</label>
+          <input
+            type="text"
+            name="websiteUrl"
+            value={formData.websiteUrl}
+            onChange={handleChange}
+            className="border px-4 py-2 rounded-lg w-full"
+          />
+        </div>
         {/* HR Photo */}
         <div>
           <label className="block font-semibold mb-1">HR Photo</label>
@@ -84,30 +164,6 @@ function RecruiterProfileForm({ profile }) {
               className="w-24 h-24 object-cover rounded mt-2"
             />
           )}
-        </div>
-
-        {/* Job Posting */}
-        <div>
-          <label className="block font-semibold mb-1">Job Posting</label>
-          <input
-            type="text"
-            name="jobPosting"
-            value={formData.jobPosting}
-            onChange={handleChange}
-            className="border px-4 py-2 rounded-lg w-full"
-          />
-        </div>
-
-        {/* Website URL */}
-        <div>
-          <label className="block font-semibold mb-1">Website URL</label>
-          <input
-            type="text"
-            name="websiteUrl"
-            value={formData.websiteUrl}
-            onChange={handleChange}
-            className="border px-4 py-2 rounded-lg w-full"
-          />
         </div>
 
         <div className="md:col-span-2">

@@ -1,134 +1,121 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function LoginPage({ onLogin }) {
+function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("placementOfficer");
+  const [role, setRole] = useState("student");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
- const handleLogin = (e) => {
-  e.preventDefault();
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setError("");
 
-  if (role === "recruiter") {
-    const recruiters = JSON.parse(localStorage.getItem("recruiters")) || [];
-    const recruiter = recruiters.find((r) => r.companyEmail === email);
-
-    if (!recruiter) {
-      alert("Recruiter not found! Please check your email or register first.");
+    if (!email || !password) {
+      setError("Please enter both email and password.");
       return;
     }
 
-    // Store full recruiter info in loggedInUser
-    const userData = { ...recruiter, role: "recruiter" };
-    localStorage.setItem("loggedInUser", JSON.stringify(userData));
+    const userData = { email, role, name: email.split("@")[0] };
     onLogin(userData);
-    navigate("/recruiter");
-    return;
-  }
 
-  if (role === "student") {
-    const students = JSON.parse(localStorage.getItem("students")) || [];
-    const student = students.find((s) => s.email === email);
-
-    if (!student) {
-      alert("Student not found! Please check your email or register first.");
-      return;
+    switch (role) {
+      case "student":
+        navigate("/student");
+        break;
+      case "admin":
+        navigate("/admin");
+        break;
+      case "recruiter":
+        navigate("/recruiter");
+        break;
+      case "company":
+        navigate("/company");
+        break;
+      default:
+        navigate("/");
     }
-
-    // ✅ Store full student info in loggedInUser
-    const userData = { ...student, role: "student" };
-    localStorage.setItem("loggedInUser", JSON.stringify(userData));
-    onLogin(userData);
-    navigate("/student");
-    return;
-  }
-
-  // For other roles
-  const userData = { email, role };
-  localStorage.setItem("loggedInUser", JSON.stringify(userData));
-  onLogin(userData);
-
-  if (role === "placementOfficer") navigate("/placementOfficer");
-  else if (role === "admin") navigate("/admin");
-};
-
-
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
-      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-md w-80 md:w-96">
-        <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800 text-center">
-          Dashboard Login
-        </h2>
+    <div className="min-h-screen flex">
+      {/* Left side image/illustration */}
+      <div className="hidden lg:flex w-1/2 bg-blue-600 items-center justify-center">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+          alt="Login Illustration"
+          className="w-3/4 h-auto"
+        />
+      </div>
 
-        {error && (
-          <p className="text-red-500 mb-4 text-sm md:text-base">{error}</p>
-        )}
+      {/* Right side form */}
+      <div className="flex flex-1 items-center justify-center bg-gray-100 p-8">
+        <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-lg">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+            Welcome Back
+          </h2>
+          <p className="text-center text-gray-500 mb-6">
+            Enter your credentials to access your dashboard
+          </p>
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 mb-2 text-sm md:text-base">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full px-3 md:px-4 py-2 md:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
-              // required
-            />
-          </div>
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-          {/* Password field - commented out but visible in code */}
-          {/* <div>
-            <label className="block text-gray-700 mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div> */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-2">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              />
+            </div>
 
-          <div>
-            <label className="block text-gray-700 mb-2 text-sm md:text-base">
-              Role
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-3 md:px-4 py-2 md:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+            <div>
+              <label className="block text-gray-700 mb-2">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Role</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              >
+                <option value="admin">Admin</option>
+                <option value="student">Student</option>
+                <option value="recruiter">Recruiter</option>
+                <option value="company">Company</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
             >
-              <option value="admin">Admin</option>
-              <option value="placementOfficer">Placement Officer</option>
-              <option value="student">Student</option>
-              <option value="recruiter">Recruiter</option>
-            </select>
+              Login
+            </button>
+          </form>
+
+          <div className="flex justify-between mt-6 text-gray-500 text-sm">
+            <span className="hover:text-blue-600 cursor-pointer">Forgot Password?</span>
+            <a href="/register" className="text-blue-600 hover:underline">
+              Sign Up
+            </a>
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2.5 md:py-3 rounded-lg hover:bg-blue-700 transition text-sm md:text-base font-medium"
-          >
-            Login
-          </button>
-        </form>
-
-        <div className="flex justify-between mt-4 text-gray-500 text-xs md:text-sm">
-          <a href="#" className="text-blue-600 hover:underline">
-            Forgot Password?
-          </a>
-          <a href="/register" className="text-blue-600 hover:underline">
-            Sign Up
-          </a>
         </div>
       </div>
     </div>
   );
 }
 
-export default LoginPage;
+export default Login;

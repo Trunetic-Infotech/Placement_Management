@@ -5,6 +5,7 @@ import AdminSidebar from "./AdminSidebar";
 import ManageStudents from "./ManageStudents";
 import ManagePlacementOfficer from "./ManageRecruiters";
 import ManageJobs from "./JobsListed";
+import ManageCompany from "./ManageCompany";
 
 
 // Dashboard Home Component - Made responsive
@@ -31,7 +32,7 @@ function DashboardHome() {
   const totalPlacements = 5;
 
   return (
-    <div>
+    <div className="bg-white p-2 rounded-md">
       <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-6">
         Admin Dashboard
       </h1>
@@ -50,10 +51,7 @@ function DashboardHome() {
           <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Jobs</h2>
           <p className="text-2xl md:text-3xl font-bold text-purple-600 mt-2">{totalJobs}</p>
         </div>
-        <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
-          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Placements</h2>
-          <p className="text-2xl md:text-3xl font-bold text-red-600 mt-2">{totalPlacements}</p>
-        </div>
+        
       </div>
 
       {/* Tables Container */}
@@ -171,6 +169,7 @@ function AdminDashboard({ onLogout }) {
             <Route path="/" element={<DashboardHome />} />
             <Route path="students" element={<ManageStudents />} />
             <Route path="officers" element={<ManagePlacementOfficer />} />
+            <Route path="company" element={<ManageCompany/>}/>
             <Route path="jobs" element={<ManageJobs />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
