@@ -25,3 +25,185 @@
 //   { name: "company_logo", maxCount: 1 },
 //   { name: "hr_photo", maxCount: 1 },
 // ]);
+
+
+ const handleRegister = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Basic validation
+    if (!name || !email || !password || !confirmPassword || !phone_number) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    // Validate phone number
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone_number)) {
+      setError("Phone number must be 10 digits");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/create`,
+        {
+          name,
+          email,
+          password,
+          phone_number,
+        }
+      );
+
+      if (response.data?.success) {
+        toast.success("Account created!", {
+          style: {
+            border: "1px solid #4F46E5",
+            padding: "10px",
+            color: "#333",
+          },
+          iconTheme: {
+            primary: "#4F46E5",
+            secondary: "#fff",
+          },
+        });
+
+        navigate("/login");
+      } else {
+        setError(response.data?.message || "Registration failed. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+    const handleLogin = async (e) => {
+  e.preventDefault();
+
+  if (!email || !password || !role) {
+    toast.error("Please enter email, password, and select your role", {
+  style: {
+    background: "#FFF5F5",        // soft rose background
+    borderLeft: "6px solid #EF4444", // strong red accent on left
+    color: "#B91C1C",             // deep red text
+    padding: "16px 20px",
+    borderRadius: "8px",
+    fontWeight: "600",
+    fontFamily: "Inter, sans-serif",
+    boxShadow: "0 8px 20px rgba(239, 68, 68, 0.25)", // floating shadow
+  },
+  icon: "⚠️",                     // adds a warning emoji
+});
+
+    return;
+  }
+
+  try {
+    let endpoint = "";
+
+    // Choose the correct API endpoint based on role
+    switch (role) {
+      case "student":
+        endpoint = `${import.meta.env.VITE_API_URL}/login/student`;
+        break;
+      case "admin":
+        endpoint = `${import.meta.env.VITE_API_URL}/admin/login`;
+        break;
+      case "recruiter":
+        endpoint = `${import.meta.env.VITE_API_URL}/recruiter/login`;
+        break;
+      default:
+        toast.error("Invalid role selected");
+        return;
+    }
+
+    // Call backend API
+    const response = await axios.post(endpoint, { email, password });
+
+    if (response.data?.success) {
+      const userData = {
+        ...response.data.user,
+        token: response.data.token,
+        role,
+      };
+
+      // Save to localStorage
+      localStorage.setItem("loggedInUser", JSON.stringify(userData));
+
+      toast.success(response.data.message || `Welcome ${userData.name || "back"}!`, {
+  style: {
+    border: "1px solid #3B82F6", // Tailwind's blue-500
+    padding: "12px 16px",
+    color: "#1E3A8A", // Tailwind's blue-900
+    background: "#EFF6FF", // blue-50
+    borderRadius: "10px",
+    fontWeight: "500",
+  },
+  iconTheme: {
+    primary: "#3B82F6",
+    secondary: "#EFF6FF",
+  },
+});
+
+      onLogin(userData);
+
+      // Navigate based on role
+      if (role === "student") navigate("/student");
+      else if (role === "placementOfficer") navigate("/placementOfficer");
+      else if (role === "admin") navigate("/admin");
+      else if (role === "recruiter") navigate("/recruiter");
+    } else {
+      toast.error(response.data?.message || "Invalid credentials", {
+  style: {
+    border: "1px solid #DC2626", // red-600
+    background: "#FEF2F2", // red-50
+    color: "#7F1D1D", // red-900
+    padding: "12px 16px",
+    borderRadius: "10px",
+    fontWeight: "500",
+  },
+  iconTheme: {
+    primary: "#DC2626",
+    secondary: "#FEF2F2",
+  },
+});
+
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error(error.response?.data?.message || "Login failed. Please try again.", {
+  style: {
+    border: "1px solid #DC2626", // red-600
+    background: "#FEF2F2", // red-50
+    color: "#7F1D1D", // red-900
+    padding: "12px 16px",
+    borderRadius: "10px",
+    fontWeight: "500",
+  },
+  iconTheme: {
+    primary: "#DC2626",
+    secondary: "#FEF2F2",
+  },
+});
+  }
+};

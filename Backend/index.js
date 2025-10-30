@@ -35,12 +35,12 @@ app.use(
 
 app.use(morgan("dev"));
 
-app.use("/api/v1/admin/", adminRoutes);
-app.use("/api/v1/student/", studentRoutes);
-app.use("/api/v1/recruiter/", recruiterRoutes);
-app.use("/api/v1/company/", companyRoutes);
-app.use("/api/v1/jobPost/", jobPostingRoutes);
-app.use("/api/v1/jobApply/", jobApplicationRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/student", studentRoutes);
+app.use("/api/v1/recruiter", recruiterRoutes);
+app.use("/api/v1/company", companyRoutes);
+app.use("/api/v1/jobPost", jobPostingRoutes);
+app.use("/api/v1/jobApply", jobApplicationRoutes);
 
 app.get("/", (req, res) => {
   res.send("<h1>SuccessFully Connected</h1>");

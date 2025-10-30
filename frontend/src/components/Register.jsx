@@ -1,22 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 function Register({ onRegister }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone_number, setPhone_number] = useState();
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("student");
+  const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
 
     // Basic validation
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill all fields");
+      return;
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone_number)) {
+      setError("Phone number must be 10 digits");
       return;
     }
 
@@ -25,8 +36,45 @@ function Register({ onRegister }) {
       return;
     }
 
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/admin/create`,
+        {
+          name,
+          email,
+          password,
+          phone_number,
+        }
+      );
+
+      if (response.data?.success) {
+        toast.success("Account created!", {
+          style: {
+            border: "1px solid #4F46E5",
+            padding: "10px",
+            color: "#333",
+          },
+          iconTheme: {
+            primary: "#4F46E5",
+            secondary: "#fff",
+          },
+        });
+
+        navigate("/login");
+      } else {
+        setError(response.data?.message || "Registration failed. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+
     // Call parent register handler (replace with backend API later)
-    onRegister({ name, email, password, role });
+    onRegister({ name, email, password });
 
     // Redirect to login page after registration
     navigate("/login");
@@ -65,6 +113,17 @@ function Register({ onRegister }) {
           </div>
 
           <div>
+            <label className="block text-gray-700 mb-2">Phone Number</label>
+            <input
+              type="number"
+              value={phone_number}
+              onChange={(e) => setPhone_number(e.target.value)}
+              placeholder="Enter your Phone Number"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
             <label className="block text-gray-700 mb-2">Password</label>
             <input
               type="password"
@@ -86,23 +145,9 @@ function Register({ onRegister }) {
             />
           </div>
 
-          <div>
-            <label className="block text-gray-700 mb-2">Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="admin">Admin</option>
-              <option value="placementOfficer">Placement Officer</option>
-              <option value="student">Student</option>
-            </select>
-          </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-          >
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
             Register
           </button>
         </form>
