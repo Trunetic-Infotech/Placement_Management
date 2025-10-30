@@ -308,15 +308,9 @@ function ManageRecruiters() {
         <table className="min-w-full border">
           <thead className="bg-gray-100">
             <tr>
-<<<<<<< HEAD
               <th className="py-2 px-4 text-left">Recruiter ID</th>
               <th className="py-2 px-4 text-left">Company Name</th>
               <th className="py-2 px-4 text-left">Company Email</th>
-=======
-              
-              <th className="py-2 px-4 text-left">Company</th>
-              <th className="py-2 px-4 text-left">Email</th>
->>>>>>> a728fe5f0f600486b1f70cc2cd2c738ca7907454
               <th className="py-2 px-4 text-left">HR Name</th>
               <th className="py-2 px-4 text-left">Job Posting</th>
               <th className="py-2 px-4 text-left">Industry</th>
@@ -329,31 +323,12 @@ function ManageRecruiters() {
           <tbody>
             {recruiters.map((recruiter) => (
               <tr key={recruiter.id} className="border-b hover:bg-gray-50">
-<<<<<<< HEAD
                 <td className="py-2 px-4">{recruiter.recruiter_id}</td>
                 <td className="py-2 px-4">{recruiter.company_name}</td>
                 <td className="py-2 px-4">{recruiter.company_email}</td>
                 <td className="py-2 px-4">{recruiter.hr_name}</td>
                 <td className="py-2 px-4">{recruiter.job_posting}</td>
                 <td className="py-2 px-4">{recruiter.industry_type}</td>
-=======
-                
-                <td className="py-2 px-4">{recruiter.companyName}</td>
-                <td className="py-2 px-4">{recruiter.companyEmail}</td>
-                <td className="py-2 px-4">{recruiter.hrName}</td>
-                <td className="py-2 px-4">{recruiter.jobPosting}</td>
-                <td className="py-2 px-4">{recruiter.industryType}</td>
-                <td className="py-2 px-4">{recruiter.websiteUrl}</td>
-                 <td className="py-2 px-4">
-                  {recruiter.hrPhoto && (
-                    <img
-                      src={recruiter.hrPhoto}
-                      alt="Logo"
-                      className="w-10 h-10 object-cover rounded"
-                    />
-                  )}
-                </td>
->>>>>>> a728fe5f0f600486b1f70cc2cd2c738ca7907454
                 <td className="py-2 px-4">
                   {recruiter.company_logo && (
                     <img

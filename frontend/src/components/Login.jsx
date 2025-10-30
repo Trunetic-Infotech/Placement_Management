@@ -130,69 +130,97 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side image/illustration */}
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left side illustration */}
       <div className="hidden lg:flex w-1/2 bg-blue-600 items-center justify-center">
         <img
           src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
           alt="Login Illustration"
-          className="w-3/4 h-auto"
+          className="w-3/4 h-auto animate-fadeIn"
         />
       </div>
 
       {/* Right side form */}
-      <div className="flex flex-1 items-center justify-center bg-gray-100 p-8">
-        <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-lg">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            Welcome Back
+      <div className="flex flex-1 items-center justify-center bg-gray-50 p-6 md:p-10">
+        <form
+          onSubmit={handleLogin}
+          className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-gray-100"
+        >
+          <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">
+            Welcome Back 👋
           </h2>
           <p className="text-center text-gray-500 mb-6">
             Enter your credentials to access your dashboard
           </p>
 
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm mb-4 text-center bg-red-50 py-2 rounded-md">
+              {error}
+            </p>
+          )}
 
-          {/* Password field - commented out but visible in code */}
-          <div>
-            <label className="block text-gray-700 mb-2">Password</label>
+          {/* Email Field */}
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2 text-sm font-medium">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+          </div>
+
+          {/* Password Field */}
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2 text-sm font-medium">
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
           </div>
 
-          <div>
-            <label className="block text-gray-700 mb-2 text-sm md:text-base">
+          {/* Role Dropdown */}
+          <div className="mb-6">
+            <label className="block text-gray-700 mb-2 text-sm font-medium">
               Role
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full px-3 md:px-4 py-2 md:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            >
               <option value="admin">Admin</option>
               <option value="student">Student</option>
               <option value="recruiter">Recruiter</option>
             </select>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2.5 md:py-3 rounded-lg hover:bg-blue-700 transition text-sm md:text-base font-medium">
+            className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium shadow-md hover:shadow-lg"
+          >
             Login
           </button>
-        </form>
 
-        <div className="flex justify-between mt-4 text-gray-500 text-xs md:text-sm">
-          <a href="#" className="text-blue-600 hover:underline">
-            Forgot Password?
-          </a>
-          <a href="/register" className="text-blue-600 hover:underline">
-            Sign Up
-          </a>
-        </div>
+          {/* Links */}
+          <div className="flex justify-between mt-4 text-gray-500 text-sm">
+            <a href="#" className="text-blue-600 hover:underline">
+              Forgot Password?
+            </a>
+            <a href="/register" className="text-blue-600 hover:underline">
+              Sign Up
+            </a>
+          </div>
+        </form>
       </div>
     </div>
   );

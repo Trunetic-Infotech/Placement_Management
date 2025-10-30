@@ -5,12 +5,9 @@ import AdminSidebar from "./AdminSidebar";
 import ManageStudents from "./ManageStudents";
 import ManagePlacementOfficer from "./ManageRecruiters";
 import ManageJobs from "./JobsListed";
-<<<<<<< HEAD
 import axios from "axios";
-=======
 import ManageCompany from "./ManageCompany";
 
->>>>>>> a728fe5f0f600486b1f70cc2cd2c738ca7907454
 
 // Dashboard Home Component - Made responsive
 function DashboardHome() {
@@ -139,7 +136,6 @@ function DashboardHome() {
           </p>
         </div>
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
-<<<<<<< HEAD
           <h2 className="text-sm md:text-lg font-semibold text-gray-700">
             Total Jobs
           </h2>
@@ -147,12 +143,6 @@ function DashboardHome() {
             {stats.totalJobs}
           </p>
         </div>
-=======
-          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Jobs</h2>
-          <p className="text-2xl md:text-3xl font-bold text-purple-600 mt-2">{totalJobs}</p>
-        </div>
-        
->>>>>>> a728fe5f0f600486b1f70cc2cd2c738ca7907454
       </div>
 
       {/* Tables Container */}

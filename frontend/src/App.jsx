@@ -15,7 +15,7 @@ import Register from "./components/Register";
 
 function App() {
   const [user, setUser] = useState(null);
-
+  
   const handleLogin = ({ email, role }) => {
     const userData = { email, role };
     setUser(userData);
@@ -28,19 +28,19 @@ function App() {
   const ProtectedRoute = ({ children, allowedRoles }) => {
     console.log(children, allowedRoles);
     
-    if (loading) return null;
+    // if (loading) return null;
     if (!user) return <Navigate to="/login" replace />;
     if (!allowedRoles.includes(user.role)) return <Navigate to="/login" replace />;
     return React.cloneElement(children, { onLogout: handleLogout, user });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen text-gray-600">
-        Loading...
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen text-gray-600">
+  //       Loading...
+  //     </div>
+  //   );
+  // }
 
   console.log(user);
   
