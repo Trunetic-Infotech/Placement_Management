@@ -1,34 +1,113 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import AdminSidebar from "./AdminSidebar";
 import ManageStudents from "./ManageStudents";
 import ManagePlacementOfficer from "./ManageRecruiters";
 import ManageJobs from "./JobsListed";
-
+import axios from "axios";
 
 // Dashboard Home Component - Made responsive
 function DashboardHome() {
-  const students = [
-    { id: 1, name: "John Doe", email: "john@example.com", rollNo: "CS101" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", rollNo: "CS102" },
-    { id: 3, name: "Alice Lee", email: "alice@example.com", rollNo: "CS103" },
-  ];
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    totalRecruiters: 0,
+    totalJobs: 0,
+  });
 
-  const Recruiters = [
-    { id: 1, name: "Mr. A", email: "a@school.com", company: "Math" },
-    { id: 2, name: "Ms. B", email: "b@school.com", company: "Physics" },
-  ];
+  const [recentStudents, setRecentStudents] = useState([]);
+  const [recruiters, setRecruiters] = useState([]);
+  const [latestJobs, setLatestJobs] = useState([]);
 
-  const jobs = [
-    { id: 1, company: "Infosys", role: "Software Engineer", postedOn: "2025-10-10" },
-    { id: 2, company: "TCS", role: "Developer", postedOn: "2025-10-12" },
-  ];
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-  const totalStudents = students.length;
-  const totalRecruiters = Recruiters.length;
-  const totalJobs = jobs.length;
-  const totalPlacements = 5;
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/admin/dashboard/stats`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        setStats(res.data.data);
+      }
+    } catch (error) {
+      console.log("Error fetching stats:", error);
+    }
+  };
+
+  const fetchRecentStudents = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/student/latestStudents`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        setRecentStudents(res.data.data);
+      }
+    } catch (error) {
+      console.log("Error fetching latest students:", error);
+    }
+  };
+
+  const fetchLatestRecruiters = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/recruiter/getLatestRecruiter/home`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        setRecruiters(res.data.data);
+      }
+    } catch (error) {
+      console.log("Error fetching latest recruiters:", error);
+    }
+  };
+
+  const fetchLatestJobs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/jobPost/latest-jobs`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        setLatestJobs(res.data.data);
+      }
+    } catch (error) {
+      console.log("Error fetching latest recruiters:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    fetchRecentStudents();
+    fetchLatestRecruiters();
+    fetchLatestJobs();
+  }, []);
 
   return (
     <div>
@@ -37,22 +116,30 @@ function DashboardHome() {
       </h1>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
-          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Students</h2>
-          <p className="text-2xl md:text-3xl font-bold text-blue-600 mt-2">{totalStudents}</p>
+          <h2 className="text-sm md:text-lg font-semibold text-gray-700">
+            Total Students
+          </h2>
+          <p className="text-2xl md:text-3xl font-bold text-blue-600 mt-2">
+            {stats.totalStudents}
+          </p>
         </div>
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
-          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Recruiters</h2>
-          <p className="text-2xl md:text-3xl font-bold text-green-600 mt-2">{totalRecruiters}</p>
+          <h2 className="text-sm md:text-lg font-semibold text-gray-700">
+            Total Recruiters
+          </h2>
+          <p className="text-2xl md:text-3xl font-bold text-green-600 mt-2">
+            {stats.totalRecruiters}
+          </p>
         </div>
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
-          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Jobs</h2>
-          <p className="text-2xl md:text-3xl font-bold text-purple-600 mt-2">{totalJobs}</p>
-        </div>
-        <div className="bg-white p-4 md:p-6 rounded-2xl shadow text-center">
-          <h2 className="text-sm md:text-lg font-semibold text-gray-700">Total Placements</h2>
-          <p className="text-2xl md:text-3xl font-bold text-red-600 mt-2">{totalPlacements}</p>
+          <h2 className="text-sm md:text-lg font-semibold text-gray-700">
+            Total Jobs
+          </h2>
+          <p className="text-2xl md:text-3xl font-bold text-purple-600 mt-2">
+            {stats.totalJobs}
+          </p>
         </div>
       </div>
 
@@ -60,22 +147,36 @@ function DashboardHome() {
       <div className="space-y-6 md:space-y-8">
         {/* Recent Students Table */}
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow">
-          <h2 className="text-lg md:text-xl font-semibold mb-4">Recent Students</h2>
+          <h2 className="text-lg md:text-xl font-semibold mb-4">
+            Recent Students
+          </h2>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Name</th>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Email</th>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Roll No</th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Name
+                  </th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Email
+                  </th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Roll No
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {students.map((student) => (
+                {recentStudents.map((student) => (
                   <tr key={student.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{student.name}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{student.email}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{student.rollNo}</td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {student.firstName} {student.lastName}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {student.email}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {student.roll_no}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -85,22 +186,36 @@ function DashboardHome() {
 
         {/* Recent Recruiters Table */}
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow">
-          <h2 className="text-lg md:text-xl font-semibold mb-4">Recent Recruiters</h2>
+          <h2 className="text-lg md:text-xl font-semibold mb-4">
+            Recent Recruiters
+          </h2>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Name</th>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Email</th>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Company</th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Name
+                  </th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Email
+                  </th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Company
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {Recruiters.map((recruiter) => (
+                {recruiters.map((recruiter) => (
                   <tr key={recruiter.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{recruiter.name}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{recruiter.email}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{recruiter.company}</td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {recruiter.hr_name}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {recruiter.company_email}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {recruiter.company_name}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -110,22 +225,36 @@ function DashboardHome() {
 
         {/* Recent Job Openings Table */}
         <div className="bg-white p-4 md:p-6 rounded-2xl shadow">
-          <h2 className="text-lg md:text-xl font-semibold mb-4">Recent Job Openings</h2>
+          <h2 className="text-lg md:text-xl font-semibold mb-4">
+            Recent Job Openings
+          </h2>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Company</th>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Role</th>
-                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">Posted On</th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Company
+                  </th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Role
+                  </th>
+                  <th className="py-2 px-2 md:px-4 text-left text-sm md:text-base">
+                    Posted On
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {jobs.map((job) => (
+                {latestJobs.map((job) => (
                   <tr key={job.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{job.company}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{job.role}</td>
-                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">{job.postedOn}</td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {job.company_id}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {job.job_title}
+                    </td>
+                    <td className="py-2 px-2 md:px-4 text-sm md:text-base">
+                      {job.posted_date}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -147,8 +276,8 @@ function AdminDashboard({ onLogout }) {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <AdminSidebar 
-        onLogout={onLogout} 
+      <AdminSidebar
+        onLogout={onLogout}
         isSidebarOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
       />
@@ -159,8 +288,7 @@ function AdminDashboard({ onLogout }) {
         <div className="lg:hidden bg-white shadow-sm border-b p-4 sticky top-0 z-40">
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-          >
+            className="p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
             <Menu size={24} />
           </button>
         </div>

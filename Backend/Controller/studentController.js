@@ -9,7 +9,7 @@ export const registerStudent = async (req, res) => {
       firstName,
       lastName,
       email,
-      phoneNumber,
+      phone,
       password,
       roll_no,
       department,
@@ -19,7 +19,8 @@ export const registerStudent = async (req, res) => {
       applied_jobs,
       status,
     } = req.body;
-    // console.log(req.body);
+    console.log(req.body);
+    const phoneNumber = phone;
 
     // console.log(req.files);
 
@@ -81,6 +82,7 @@ export const registerStudent = async (req, res) => {
     );
 
     res.status(201).json({
+      success: true,
       message: "Student registered successfully",
       student_id: result.insertId,
     });
@@ -147,9 +149,13 @@ export const studentLogin = async (req, res) => {
 // ✅ GET ALL STUDENT CONTROLLER LOGIC CODE
 export const getAllStudents = async (req, res) => {
   try {
-  } catch (error) {
     const [rows] = await student.query("SELECT * FROM student");
-    res.status(200).json(rows);
+    res.status(200).json({
+      success: true,
+      message: "Students data retrieved!",
+      data: rows,
+    });
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
@@ -294,10 +300,12 @@ export const deleteStudent = async (req, res) => {
     const { id } = req.params;
 
     await student.query("DELETE FROM student WHERE student_id = ?", [id]);
-    res.status(200).json({ message: "Student deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Student deleted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -341,5 +349,22 @@ export const resetStudentPassword = async (req, res) => {
   } catch (error) {
     console.error("Error in resetStudentPassword:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getLatestStudents = async (req, res) => {
+  try {
+    const [rows] = await student.query(
+      "SELECT * FROM student ORDER BY created_at DESC LIMIT 3"
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Latest students fetched successfully!",
+      data: rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

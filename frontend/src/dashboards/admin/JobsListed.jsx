@@ -1,17 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 function JobsListed() {
   const [jobs, setJobs] = useState([]);
 
+  const fetchJobs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/jobpost/jobs/all`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        setJobs(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
-    const storedJobs = JSON.parse(localStorage.getItem("jobs")) || [];
-    setJobs(storedJobs);
+    fetchJobs();
   }, []);
 
-  const handleDelete = (id) => {
-    const updated = jobs.filter((job) => job.id !== id);
-    setJobs(updated);
-    localStorage.setItem("jobs", JSON.stringify(updated));
+  // ✅ DELETE function
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = axios.delete(
+        `${import.meta.env.VITE_API_URL}/jobPost/delete/jobPost/${id}`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        toast.success("Job deleted successfully!");
+        // alert("Job deleted successfully!");
+
+        setJobs(jobs.filter((job) => job.job_id !== id));
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete job");
+    }
   };
 
   return (
@@ -28,38 +69,39 @@ function JobsListed() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="py-2 px-4 text-left">Title</th>
-                <th className="py-2 px-4 text-left">Company</th>
-                <th className="py-2 px-4 text-left">Description</th>
-                <th className="py-2 px-4 text-left">Salary</th>
-                <th className="py-2 px-4 text-left">Skills</th>
-                <th className="py-2 px-4 text-left">HR</th>
-                <th className="py-2 px-4 text-left">Email</th>
                 <th className="py-2 px-4 text-left">Location</th>
-                <th className="py-2 px-4 text-left">Eligibility</th>
+                <th className="py-2 px-4 text-left">Salary</th>
+                <th className="py-2 px-4 text-left">Skills Required</th>
+                <th className="py-2 px-4 text-left">Qualified required</th>
+                <th className="py-2 px-4 text-left">Job Type</th>
+                <th className="py-2 px-4 text-left">Work Mode</th>
+                <th className="py-2 px-4 text-left">Openings</th>
                 <th className="py-2 px-4 text-left">Last Date</th>
+                <th className="py-2 px-4 text-left">Status</th>
                 <th className="py-2 px-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {jobs.map((job) => (
                 <tr key={job.id} className="border-b hover:bg-gray-50">
-                  <td className="py-2 px-4">{job.title}</td>
-                  <td className="py-2 px-4">{job.companyName}</td>
-                  <td className="py-2 px-4">{job.description}</td>
-                  <td className="py-2 px-4">{job.salary}</td>
-                  <td className="py-2 px-4">{job.skillsRequired}</td>
-                  <td className="py-2 px-4">{job.recruiterName}</td>
-                  <td className="py-2 px-4">{job.recruiterEmail}</td>
-                  <td className="py-2 px-4">{job.location}</td>
-                  <td className="py-2 px-4">{job.eligibility}</td>
+                  <td className="py-2 px-4">{job.job_title}</td>
+                  <td className="py-2 px-4">{job.job_location}</td>
+                  <td className="py-2 px-4">{job.salary_range}</td>
+                  <td className="py-2 px-4">{job.skills_required}</td>
+                  <td className="py-2 px-4">{job.qualification_required}</td>
+                  <td className="py-2 px-4">{job.job_type}</td>
+                  <td className="py-2 px-4">{job.work_mode}</td>
+                  <td className="py-2 px-4">{job.openings}</td>
                   <td className="py-2 px-4">
-                    {new Date(job.lastDate).toLocaleDateString("en-IN")}
+                    {new Date(job.application_deadline).toLocaleDateString(
+                      "en-IN"
+                    )}
                   </td>
+                  <td className="py-2 px-4">{job.status}</td>
                   <td className="py-2 px-4">
                     <button
-                      onClick={() => handleDelete(job.id)}
-                      className="text-red-600 hover:text-red-700 font-semibold"
-                    >
+                      onClick={() => handleDelete(job.job_id)}
+                      className="text-red-600 hover:text-red-700 font-semibold">
                       Delete
                     </button>
                   </td>

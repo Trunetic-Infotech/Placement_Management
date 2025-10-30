@@ -2,6 +2,7 @@ import express from "express";
 import {
   deleteStudent,
   getAllStudents,
+  getLatestStudents,
   getStudentById,
   registerStudent,
   resetStudentPassword,
@@ -33,6 +34,8 @@ router.post("/login/student", studentLogin);
 router.get("/getAllStudents", adminAuthMiddleware, getAllStudents);
 
 router.get("/getStudentId/:id", adminAuthMiddleware, getStudentById);
+
+router.get("/latestStudents", adminAuthMiddleware, getLatestStudents);
 
 router.put("/studentDetailsUpdate/:id", updateStudentDetails);
 

@@ -31,6 +31,7 @@ import {
   updateHrPhoto,
   deleteRecruiter,
   resetRecruiterPassword,
+  getLatestRecruiter,
 } from "../Controller/recruiterController.js";
 import {
   uploadCompanyLogo,
@@ -62,6 +63,8 @@ router.get("/allRecruiter", adminAuthMiddleware, getAllRecruiters);
 
 // 🔎 Get recruiter by ID
 router.get("/:id", adminAuthMiddleware, getRecruiterById);
+
+router.get("/getLatestRecruiter/home",adminAuthMiddleware, getLatestRecruiter);
 
 // ✏️ Update recruiter details (text fields)
 router.put("/update/:id", updateRecruiterDetails);

@@ -255,3 +255,21 @@ export const deleteJobPosting = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// 🟩 Get Latest Job Postings
+export const getLatestJobPostings = async (req, res) => {
+  try {
+    const [rows] = await job_postings.query(
+      "SELECT * FROM job_postings ORDER BY posted_date DESC LIMIT 3"
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Latest job postings fetched successfully!",
+      data: rows,
+    });
+  } catch (error) {
+    console.error("Error in getLatestJobPostings:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

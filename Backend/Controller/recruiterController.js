@@ -17,6 +17,7 @@ export const registerRecruiter = async (req, res) => {
       website_url,
     } = req.body;
     console.log(req.body);
+    console.log(req.file);
 
     // 1️⃣ Validate required fields
     if (
@@ -55,10 +56,14 @@ export const registerRecruiter = async (req, res) => {
 
     // 3️⃣ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(req.files);
 
     // 4️⃣ Handle uploaded files
     const company_logo = req.files?.company_logo?.[0]?.path || null;
     const hr_photo = req.files?.hr_photo?.[0]?.path || null;
+
+    console.log(company_logo);
+    console.log(hr_photo);
 
     // 5️⃣ Insert into database
     const [result] = await recruiter.query(
@@ -347,3 +352,21 @@ export const resetRecruiterPassword = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getLatestRecruiter = async (req, res) => {
+  try {
+    const [rows] = await recruiter.query(
+      "SELECT * FROM recruiter ORDER BY created_at DESC LIMIT 3"
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Latest recruiter fetched successfully!",
+      data: rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+

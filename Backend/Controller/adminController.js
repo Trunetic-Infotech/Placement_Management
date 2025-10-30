@@ -2,6 +2,9 @@ import admin from "../config/db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import student from "../config/db.js";
+import recruiter from "../config/db.js";
+import job_postings from "../config/db.js";
 
 dotenv.config();
 
@@ -201,5 +204,41 @@ export const resetAdminPassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Counter Controller
+export const adminDashboardStats = async (req, res) => {
+  try {
+    // ✅ Count students
+    const [studentCount] = await student.query(
+      "SELECT COUNT(*) AS totalStudents FROM student"
+    );
+
+    // ✅ Count recruiters
+    const [recruiterCount] = await recruiter.query(
+      "SELECT COUNT(*) AS totalRecruiters FROM recruiter"
+    );
+
+    // ✅ Count jobs
+    const [jobCount] = await job_postings.query(
+      "SELECT COUNT(*) AS totalJobs FROM job_postings"
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin dashboard stats fetched!",
+      data: {
+        totalStudents: studentCount[0].totalStudents,
+        totalRecruiters: recruiterCount[0].totalRecruiters,
+        totalJobs: jobCount[0].totalJobs,
+      },
+    });
+  } catch (error) {
+    console.error("Error in adminDashboardStats:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };

@@ -64,6 +64,7 @@ function LoginPage({ onLogin }) {
         // navigate("");
         // Save to localStorage
         localStorage.setItem("loggedInUser", JSON.stringify(userData));
+        localStorage.setItem(`token`, response.data.token);
 
         toast.success(
           response.data.message || `Welcome ${userData.name || "back"}!`,
