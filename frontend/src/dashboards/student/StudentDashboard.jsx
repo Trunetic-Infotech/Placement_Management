@@ -1,172 +1,177 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// StudentDashboard.jsx
+import React, { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+
 import StudentSidebar from "./StudentSidebar";
 import StudentProfileForm from "./StudentProfileForm";
 import JobOpenings from "./JobOpenings";
 import StudentApplications from "./StudentApplications";
 import PlacementResults from "./PlacementResults";
 
-function StudentDashboard({ onLogout }) {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(
-    localStorage.getItem("activeStudentTab") || "dashboard"
-  );
-  const [studentProfile, setStudentProfile] = useState(null);
+function StudentDashboard({ onLogout, user }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Protect route and load profile
-  useEffect(() => {
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!loggedInUser || loggedInUser.role !== "student") {
-      navigate("/login");
-      return;
-    }
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-    const allStudents = JSON.parse(localStorage.getItem("students")) || [];
-    const profile = allStudents.find((s) => s.email === loggedInUser.email);
-    setStudentProfile(profile || null);
-  }, [navigate]);
-
-  // Save tab selection
-  useEffect(() => {
-    localStorage.setItem("activeStudentTab", activeTab);
-  }, [activeTab]);
-
-  // Keep profile updated if edited elsewhere
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (!loggedInUser || loggedInUser.role !== "student") return;
-
-      const allStudents = JSON.parse(localStorage.getItem("students")) || [];
-      const profile = allStudents.find((s) => s.email === loggedInUser.email);
-      setStudentProfile(profile || null);
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+  // Dummy student data
+  const studentProfile = {
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@example.com",
+    rollNo: "CS101",
+    phone: "9876543210",
+    department: "Computer Science",
+    course: "B.Tech",
+    cgpa: "9.2",
+    skills: "React, Node.js",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+    resume:
+      "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    certificate:
+      "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
       <StudentSidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onLogout={onLogout}
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        onLogout={onLogout} // Pass the prop
       />
 
-      <main className="flex-1 p-8">
-        {activeTab === "dashboard" && (
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-800 mb-6">
-              Dashboard Overview
-            </h1>
+      {/* Main Content */}
+      <main className="flex-1 min-w-0">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white shadow-sm border-b p-4 sticky top-0 z-40 flex items-center justify-between">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+          >
+            {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
 
-            {studentProfile ? (
-              <div className="bg-gradient-to-br from-white to-blue-50 border border-gray-200 rounded-2xl shadow-md p-8 max-w-5xl mb-10 transition-transform transform hover:scale-[1.01] hover:shadow-lg">
-                {/* Name & Email */}
-                <div className="flex items-center gap-5 mb-6">
-                  <div className="w-16 h-16 bg-blue-100 flex items-center justify-center rounded-full text-blue-600 text-2xl font-bold uppercase shadow-inner">
-                    {studentProfile.firstName
-                      ? studentProfile.firstName[0]
-                      : "A"}
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-800 tracking-wide">
-                      {studentProfile.firstName} {studentProfile.lastName}
-                    </h2>
-                    <p className="text-gray-500">{studentProfile.email}</p>
-                  </div>
-                </div>
-
-                {/* All Profile Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
-                  {[
-                    { label: "Roll No", value: studentProfile.rollNo },
-                    {
-                      label: "Full Name",
-                      value: `${studentProfile.firstName} ${studentProfile.lastName}`,
-                    },
-                    { label: "Email", value: studentProfile.email },
-                    { label: "Phone Number", value: studentProfile.phone },
-                    { label: "Department", value: studentProfile.department },
-                    { label: "Course", value: studentProfile.course },
-                    { label: "CGPA", value: studentProfile.cgpa },
-                    { label: "Skills", value: studentProfile.skills },
-                  ].map((field, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 bg-white rounded-lg shadow-sm border border-gray-100"
-                    >
-                      <p className="text-sm text-gray-500">{field.label}</p>
-                      <p className="font-medium">{field.value || "N/A"}</p>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="max-w-4xl mx-auto p-4 space-y-6">
+                {/* Profile Section */}
+                <div className="bg-white p-6 rounded-2xl shadow">
+                  <h1 className="text-2xl font-bold text-gray-800 mb-6">
+                    Dashboard Overview
+                  </h1>
+                  <div className="flex items-center gap-6 mb-6">
+                    <img
+                      src={studentProfile.profileImage}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full border shadow-sm object-cover"
+                    />
+                    <div>
+                      <h2 className="text-2xl font-semibold">
+                        {studentProfile.firstName} {studentProfile.lastName}
+                      </h2>
+                      <p className="text-gray-500">{studentProfile.course}</p>
+                      <p className="text-gray-500">
+                        {studentProfile.department}
+                      </p>
                     </div>
-                  ))}
-
-                  {/* Profile Image */}
-                  <div className="p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                    <p className="text-sm text-gray-500">Profile Image</p>
-                    {studentProfile.profileImage ? (
-                      <img
-                        src={studentProfile.profileImage}
-                        alt="Profile"
-                        className="mt-2 w-20 h-20 object-cover rounded-full"
-                      />
-                    ) : (
-                      <p className="text-gray-400">N/A</p>
-                    )}
                   </div>
 
-                  {/* Resume */}
-                  <div className="p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                    <p className="text-sm text-gray-500">Resume</p>
-                    {studentProfile.resume ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {[
+                      { label: "Email", value: studentProfile.email },
+                      { label: "Roll No", value: studentProfile.rollNo },
+                      { label: "Phone", value: studentProfile.phone },
+                      { label: "CGPA", value: studentProfile.cgpa },
+                      { label: "Skills", value: studentProfile.skills },
+                    ].map((field, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-100"
+                      >
+                        <p className="text-sm text-gray-500">{field.label}</p>
+                        <p className="font-medium text-gray-800">
+                          {field.value || "N/A"}
+                        </p>
+                      </div>
+                    ))}
+
+                    {/* Resume */}
+                    <div className="p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-500">Resume</p>
+                        <p className="font-medium text-gray-800">Available</p>
+                      </div>
                       <a
                         href={studentProfile.resume}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 underline"
+                        className="flex items-center gap-2 text-blue-600 hover:underline"
                       >
-                        View Resume
+                        View
                       </a>
-                    ) : (
-                      <p className="text-gray-400">N/A</p>
-                    )}
-                  </div>
+                    </div>
 
-                  <div className="p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                    <p className="text-sm text-gray-500">Certificate</p>
-                    {studentProfile.certificate ? (
+                    {/* Certificate */}
+                    <div className="p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-500">Certificate</p>
+                        <p className="font-medium text-gray-800">Available</p>
+                      </div>
                       <a
                         href={studentProfile.certificate}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 underline"
+                        className="flex items-center gap-2 text-green-600 hover:underline"
                       >
-                        View Certificate
+                        View
                       </a>
-                    ) : (
-                      <p className="text-gray-400">N/A</p>
-                    )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Summary/Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-white p-4 rounded-2xl shadow text-center">
+                    <h2 className="text-lg font-semibold text-gray-700">
+                      Total Applications
+                    </h2>
+                    <p className="text-3xl font-bold text-blue-600 mt-2">12</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-2xl shadow text-center">
+                    <h2 className="text-lg font-semibold text-gray-700">
+                      Jobs Applied
+                    </h2>
+                    <p className="text-3xl font-bold text-green-600 mt-2">8</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-2xl shadow text-center">
+                    <h2 className="text-lg font-semibold text-gray-700">
+                      Jobs Shortlisted
+                    </h2>
+                    <p className="text-3xl font-bold text-purple-600 mt-2">3</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-2xl shadow text-center">
+                    <h2 className="text-lg font-semibold text-gray-700">
+                      Placed
+                    </h2>
+                    <p className="text-3xl font-bold text-green-800 mt-2">1</p>
                   </div>
                 </div>
               </div>
-            ) : (
-              <p className="text-gray-500 text-center mt-10 bg-white rounded-xl shadow-sm py-6">
-                No profile found. Please contact admin or fill your profile in{" "}
-                <span className="font-semibold text-blue-600">
-                  “My Profile”
-                </span>{" "}
-                section.
-              </p>
-            )}
-          </div>
-        )}
+            }
+          />
 
-        {activeTab === "profile" && (
-          <StudentProfileForm studentProfile={studentProfile} />
-        )}
-        {activeTab === "jobs" && <JobOpenings />}
-        {activeTab === "applications" && <StudentApplications />}
-        {activeTab === "results" && <PlacementResults />}
+          <Route
+            path="profile"
+            element={<StudentProfileForm studentProfile={studentProfile} />}
+          />
+          <Route path="jobs" element={<JobOpenings />} />
+          <Route path="applications" element={<StudentApplications />} />
+          <Route path="results" element={<PlacementResults />} />
+        </Routes>
       </main>
     </div>
   );

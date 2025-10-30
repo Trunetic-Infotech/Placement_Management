@@ -1,71 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 function StudentProfileForm() {
   const [formData, setFormData] = useState({
-    rollNo: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    department: "",
-    course: "",
-    cgpa: "",
-    skills: "",
+    rollNo: "CS101",
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@example.com",
+    phone: "9876543210",
+    department: "Computer Science",
+    course: "B.Tech",
+    cgpa: "9.2",
+    skills: "React, Node.js",
     profileImage: "",
     resume: "",
     certificate: "",
   });
 
-  // Load student profile from localStorage
-  useEffect(() => {
-    const students = JSON.parse(localStorage.getItem("students")) || [];
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || {};
-    const student = students.find((s) => s.email === loggedInUser.email);
-    if (student) setFormData(student);
-  }, []);
-
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    if ((name === "profileImage" || name === "resume" || name === "certificate") && files && files[0]) {
+    if (
+      (name === "profileImage" ||
+        name === "resume" ||
+        name === "certificate") &&
+      files &&
+      files[0]
+    ) {
       const reader = new FileReader();
       reader.onload = (ev) => {
         setFormData({ ...formData, [name]: ev.target.result });
       };
       reader.readAsDataURL(files[0]);
-    } else if (["skills"].includes(name)) {
+    } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const students = JSON.parse(localStorage.getItem("students")) || [];
-    const index = students.findIndex((s) => s.email === formData.email);
-
-    if (index !== -1) {
-      students[index] = { ...students[index], ...formData };
-      localStorage.setItem("students", JSON.stringify(students));
-      alert("Profile updated successfully!");
-    }
+    alert("This is a UI-only form. Changes are not saved.");
   };
 
   return (
     <div className="bg-white shadow-md rounded-2xl p-8 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">My Profile</h2>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         {[
-          { label: "Roll No", name: "rollNo", editable: false },
-          { label: "First Name", name: "firstName", editable: false },
-          { label: "Last Name", name: "lastName", editable: false },
-          { label: "Email", name: "email", editable: false },
-          { label: "Phone", name: "phone", editable: false },
-          { label: "Department", name: "department", editable: false },
-          { label: "Course", name: "course", editable: false },
-          { label: "CGPA", name: "cgpa", editable: false },
-          { label: "Skills", name: "skills", editable: true },
+          { label: "Roll No", name: "rollNo" },
+          { label: "First Name", name: "firstName" },
+          { label: "Last Name", name: "lastName" },
+          { label: "Email", name: "email" },
+          { label: "Phone", name: "phone" },
+          { label: "Department", name: "department" },
+          { label: "Course", name: "course" },
+          { label: "CGPA", name: "cgpa" },
         ].map((field) => (
           <div key={field.name}>
             <label className="block mb-1 font-medium">{field.label}</label>
@@ -73,16 +65,25 @@ function StudentProfileForm() {
               type="text"
               name={field.name}
               value={formData[field.name]}
-              onChange={handleChange}
-              className={`border px-3 py-2 rounded-lg w-full ${
-                field.editable ? "" : "bg-gray-100 cursor-not-allowed"
-              }`}
-              readOnly={!field.editable}
+              readOnly
+              className="border px-3 py-2 rounded-lg w-full bg-gray-100 cursor-not-allowed"
             />
           </div>
         ))}
 
-        {/* Profile Image */}
+        {/* Editable: Skills */}
+        <div>
+          <label className="block mb-1 font-medium">Skills</label>
+          <input
+            type="text"
+            name="skills"
+            value={formData.skills}
+            onChange={handleChange}
+            className="border px-3 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        {/* Editable: Profile Image */}
         <div>
           <label className="block mb-1 font-medium">Profile Image</label>
           <input
@@ -101,7 +102,7 @@ function StudentProfileForm() {
           )}
         </div>
 
-        {/* Resume */}
+        {/* Editable: Resume */}
         <div>
           <label className="block mb-1 font-medium">Resume</label>
           <input
@@ -123,13 +124,13 @@ function StudentProfileForm() {
           )}
         </div>
 
-        {/* Certificate */}
+        {/* Editable: Certificate */}
         <div>
           <label className="block mb-1 font-medium">Certificate</label>
           <input
             type="file"
             name="certificate"
-            accept=".pdf,.doc,.docx,.jpg,.png"
+            accept=".pdf,.jpg,.png"
             onChange={handleChange}
             className="border px-3 py-2 rounded-lg w-full"
           />
@@ -145,6 +146,7 @@ function StudentProfileForm() {
           )}
         </div>
 
+        {/* Submit Button */}
         <div className="md:col-span-2">
           <button
             type="submit"

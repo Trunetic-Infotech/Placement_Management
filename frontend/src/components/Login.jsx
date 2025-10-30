@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-function LoginPage({ onLogin }) {
+function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("admin");
@@ -130,30 +130,27 @@ function LoginPage({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
-      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-md w-80 md:w-96">
-        <h2 className="text-xl md:text-2xl font-bold mb-6 text-gray-800 text-center">
-          Dashboard Login
-        </h2>
+    <div className="min-h-screen flex">
+      {/* Left side image/illustration */}
+      <div className="hidden lg:flex w-1/2 bg-blue-600 items-center justify-center">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+          alt="Login Illustration"
+          className="w-3/4 h-auto"
+        />
+      </div>
 
-        {error && (
-          <p className="text-red-500 mb-4 text-sm md:text-base">{error}</p>
-        )}
+      {/* Right side form */}
+      <div className="flex flex-1 items-center justify-center bg-gray-100 p-8">
+        <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-lg">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+            Welcome Back
+          </h2>
+          <p className="text-center text-gray-500 mb-6">
+            Enter your credentials to access your dashboard
+          </p>
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 mb-2 text-sm md:text-base">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full px-3 md:px-4 py-2 md:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
-              // required
-            />
-          </div>
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
           {/* Password field - commented out but visible in code */}
           <div>
@@ -201,4 +198,4 @@ function LoginPage({ onLogin }) {
   );
 }
 
-export default LoginPage;
+export default Login;

@@ -1,78 +1,77 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 function ShortlistedList() {
-  const [shortlisted, setShortlisted] = useState([]);
-
-  // 🟢 Get logged recruiter info
-  const recruiter = JSON.parse(localStorage.getItem("loggedRecruiter")) || {};
-
-  useEffect(() => {
-    // ✅ Get all applications stored globally
-    const allApplications = JSON.parse(localStorage.getItem("studentApplications")) || [];
-
-    // ✅ Filter shortlisted applications only for this recruiter’s company
-    const filtered = allApplications.filter(
-      (app) =>
-        app.status === "Shortlisted" &&
-        app.company?.toLowerCase() === recruiter.company?.toLowerCase()
-    );
-
-    setShortlisted(filtered);
-  }, [recruiter.company]);
+  const [shortlisted] = useState([
+    {
+      id: 1,
+      studentName: "Alice Sharma",
+      rollNo: "CS101",
+      department: "Computer Science",
+      course: "B.Tech",
+      cgpa: 8.5,
+      skills: "React, Node.js",
+      resumeLink: "#",
+      interviewDate: "2025-11-05",
+    },
+    {
+      id: 2,
+      studentName: "Rahul Singh",
+      rollNo: "IT102",
+      department: "Information Technology",
+      course: "B.Tech",
+      cgpa: 9.0,
+      skills: "Python, SQL",
+      resumeLink: "#",
+      interviewDate: "2025-11-07",
+    },
+  ]);
 
   return (
     <div className="bg-white rounded-2xl shadow p-8 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        Shortlisted Candidates ({recruiter.company || "Unknown Company"})
+        Shortlisted Candidates 
       </h2>
 
-      {shortlisted.length > 0 ? (
-        <table className="min-w-full border border-gray-200 text-gray-700">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-2 px-4 border">Name</th>
-              <th className="py-2 px-4 border">Roll No</th>
-              <th className="py-2 px-4 border">Department</th>
-              <th className="py-2 px-4 border">Course</th>
-              <th className="py-2 px-4 border">CGPA</th>
-              <th className="py-2 px-4 border">Skills</th>
-              <th className="py-2 px-4 border">Job Title</th>
-              <th className="py-2 px-4 border">Resume</th>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border text-left text-gray-700">
+          <thead className="bg-green-50 border-b text-gray-800">
+            <tr>
+              <th className="px-6 py-3">Student Name</th>
+              <th className="px-6 py-3">Roll No</th>
+              <th className="px-6 py-3">Department</th>
+              <th className="px-6 py-3">Course</th>
+              <th className="px-6 py-3">CGPA</th>
+              <th className="px-6 py-3">Skills</th>
+              <th className="px-6 py-3">Resume</th>
+              <th className="px-6 py-3">Interview Date</th>
             </tr>
           </thead>
+
           <tbody>
-            {shortlisted.map((app, index) => (
-              <tr key={index} className="text-center hover:bg-gray-50 transition">
-                <td className="py-2 px-4 border">{app.student?.name || "N/A"}</td>
-                <td className="py-2 px-4 border">{app.student?.rollNo || "N/A"}</td>
-                <td className="py-2 px-4 border">{app.student?.department || "N/A"}</td>
-                <td className="py-2 px-4 border">{app.student?.course || "N/A"}</td>
-                <td className="py-2 px-4 border">{app.student?.cgpa || "N/A"}</td>
-                <td className="py-2 px-4 border">{app.student?.skills || "N/A"}</td>
-                <td className="py-2 px-4 border">{app.title}</td>
-                <td className="py-2 px-4 border">
-                  {app.student?.resumeLink ? (
-                    <a
-                      href={app.student.resumeLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      View Resume
-                    </a>
-                  ) : (
-                    "No Resume"
-                  )}
+            {shortlisted.map((s) => (
+              <tr key={s.id} className="border-b hover:bg-gray-50">
+                <td className="px-6 py-3">{s.studentName}</td>
+                <td className="px-6 py-3">{s.rollNo}</td>
+                <td className="px-6 py-3">{s.department}</td>
+                <td className="px-6 py-3">{s.course}</td>
+                <td className="px-6 py-3">{s.cgpa}</td>
+                <td className="px-6 py-3">{s.skills}</td>
+                <td className="px-6 py-3 text-center">
+                  <a
+                    href={s.resumeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline hover:text-blue-800"
+                  >
+                    View Resume
+                  </a>
                 </td>
+                <td className="px-6 py-3 text-center">{s.interviewDate}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      ) : (
-        <p className="text-gray-500 text-center">
-          No shortlisted candidates for {recruiter.company || "this company"}.
-        </p>
-      )}
+      </div>
     </div>
   );
 }

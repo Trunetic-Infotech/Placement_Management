@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 function AddJobs() {
+  // Dummy recruiter info
+  const recruiter = {
+    hrName: "Rahul Sharma",
+    companyName: "TechNova Solutions",
+  };
+
+  // Job form data
   const [jobData, setJobData] = useState({
     title: "",
     description: "",
@@ -11,68 +18,52 @@ function AddJobs() {
     lastDate: "",
   });
 
-  const [jobs, setJobs] = useState([]);
-  const [recruiter, setRecruiter] = useState(null);
+  // Dummy jobs list
+  const [jobs, setJobs] = useState([
+    {
+      id: 1,
+      title: "Frontend Developer",
+      description: "Develop and maintain UI components using React.js.",
+      skillsRequired: "React, Tailwind, JavaScript",
+      salary: "₹6 LPA",
+      location: "Bangalore",
+      eligibility: "B.Tech / MCA",
+      lastDate: "2025-11-30",
+      recruiterName: recruiter.hrName,
+      companyName: recruiter.companyName,
+    },
+  ]);
 
-  // ✅ Load recruiter info and previous jobs
-  useEffect(() => {
-    const loggedRecruiter = JSON.parse(
-      localStorage.getItem("loggedInRecruiter")
-    );
-    if (loggedRecruiter) {
-      setRecruiter(loggedRecruiter);
-    } else {
-      alert("Recruiter not logged in!");
-    }
-
-    const savedJobs = JSON.parse(localStorage.getItem("jobs")) || [];
-    setJobs(savedJobs);
-  }, []);
-
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setJobData({ ...jobData, [name]: value });
   };
 
+  // Dummy add handler
   const handleAddJob = (e) => {
     e.preventDefault();
 
-    if (!recruiter) {
-      alert("No recruiter logged in!");
+    if (
+      !jobData.title ||
+      !jobData.description ||
+      !jobData.skillsRequired ||
+      !jobData.location ||
+      !jobData.eligibility ||
+      !jobData.lastDate
+    ) {
+      alert("Please fill all required fields!");
       return;
     }
 
-    // Validate required fields
-    const requiredFields = [
-      "title",
-      "description",
-      "skillsRequired",
-      "location",
-      "eligibility",
-      "lastDate",
-    ];
-
-    for (let field of requiredFields) {
-      if (!jobData[field]) {
-        alert(`Please fill ${field}`);
-        return;
-      }
-    }
-
-    // ✅ Add recruiter details into the job entry
     const newJob = {
       id: Date.now(),
       ...jobData,
-      recruiterName: recruiter.hrName || "Unknown HR",
-      recruiterEmail: recruiter.companyEmail || "Unknown Email",
-      companyName: recruiter.companyName || "Unknown Company",
+      recruiterName: recruiter.hrName,
+      companyName: recruiter.companyName,
     };
 
-    const updatedJobs = [...jobs, newJob];
-    setJobs(updatedJobs);
-    localStorage.setItem("jobs", JSON.stringify(updatedJobs));
-
-    // Reset form
+    setJobs([...jobs, newJob]);
     setJobData({
       title: "",
       description: "",
@@ -83,26 +74,23 @@ function AddJobs() {
       lastDate: "",
     });
 
-    alert("✅ Job added successfully!");
+    alert("✅ Job added successfully! (dummy)");
   };
 
+  // Dummy delete
   const handleDelete = (id) => {
-    const updatedJobs = jobs.filter((job) => job.id !== id);
-    setJobs(updatedJobs);
-    localStorage.setItem("jobs", JSON.stringify(updatedJobs));
+    setJobs(jobs.filter((job) => job.id !== id));
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-2xl shadow">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add New Job</h2>
 
-      {recruiter && (
-        <p className="mb-4 text-gray-600">
-          <strong>Logged in as:</strong> {recruiter.hrName} (
-          {recruiter.companyName})
-        </p>
-      )}
+      <p className="mb-4 text-gray-600">
+        <strong>Logged in as:</strong> {recruiter.hrName} ({recruiter.companyName})
+      </p>
 
+      {/* Job Form */}
       <form
         onSubmit={handleAddJob}
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -207,15 +195,12 @@ function AddJobs() {
           <p className="text-gray-500">No jobs posted yet.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full border">
+            <table className="min-w-full border text-sm">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="py-2 px-4 text-left">Job Title</th>
-                  
                   <th className="py-2 px-4 text-left">Description</th>
-                  <th className="py-2 px-4 text-left">Salary</th>
                   <th className="py-2 px-4 text-left">Skills</th>
-                  <th className="py-2 px-4 text-left">HR Name</th>
                   <th className="py-2 px-4 text-left">Location</th>
                   <th className="py-2 px-4 text-left">Salary</th>
                   <th className="py-2 px-4 text-left">Eligibility</th>
@@ -227,11 +212,8 @@ function AddJobs() {
                 {jobs.map((job) => (
                   <tr key={job.id} className="border-b hover:bg-gray-50">
                     <td className="py-2 px-4">{job.title}</td>
-                    
                     <td className="py-2 px-4">{job.description}</td>
-                    <td className="py-2 px-4">{job.salary}</td>
                     <td className="py-2 px-4">{job.skillsRequired}</td>
-                    <td className="py-2 px-4">{job.recruiterName}</td>
                     <td className="py-2 px-4">{job.location}</td>
                     <td className="py-2 px-4">{job.salary || "N/A"}</td>
                     <td className="py-2 px-4">{job.eligibility}</td>

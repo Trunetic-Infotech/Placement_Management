@@ -1,110 +1,96 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 function JobOpenings() {
-  const [jobs, setJobs] = useState([]);
-  const [student, setStudent] = useState(null);
+  const [jobs] = useState([
+    {
+      id: 1,
+      title: "Frontend Developer",
+      companyName: "TechNova Pvt. Ltd.",
+      location: "Mumbai",
+      eligibility: "B.Tech / B.E. in Computer Science",
+      skillsRequired: "React, JavaScript, Tailwind CSS",
+      salary: "₹6 LPA",
+      recruiterName: "Riya Sharma (HR)",
+      lastDate: "2025-11-10",
+    },
+    {
+      id: 2,
+      title: "Data Analyst Intern",
+      companyName: "DataVision Analytics",
+      location: "Pune",
+      eligibility: "Any Graduate",
+      skillsRequired: "Excel, SQL, Python",
+      salary: "₹20,000 / month",
+      recruiterName: "Amit Kumar (HR)",
+      lastDate: "2025-11-15",
+    },
+  ]);
 
- useEffect(() => {
-  const storedJobs = JSON.parse(localStorage.getItem("jobs")) || [];
-  setJobs(storedJobs);
+  const [appliedJobs, setAppliedJobs] = useState([]);
 
-  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-
-  if (!loggedInUser || loggedInUser.role !== "student") {
-    alert("Student not logged in");
-    return;
-  }
-
-  // ✅ Set student state from loggedInUser directly
-  setStudent(loggedInUser);
-}, []);
-
-
-
-  const handleApply = (job) => {
-    if (!student) {
-      alert("Please log in as a student to apply!");
-      return;
+  const handleApply = (jobId) => {
+    if (!appliedJobs.includes(jobId)) {
+      setAppliedJobs([...appliedJobs, jobId]);
+      alert("✅ Application submitted successfully!");
     }
-
-    const applications = JSON.parse(localStorage.getItem("applications")) || [];
-
-    // Prevent duplicate applications
-    const alreadyApplied = applications.some(
-      (a) => a.jobId === job.id && a.studentEmail === student.email
-    );
-    if (alreadyApplied) {
-      alert("You’ve already applied for this job!");
-      return;
-    }
-
-    const newApplication = {
-      id: Date.now(),
-      jobId: job.id,
-      jobTitle: job.title,
-      companyName: job.companyName,
-      recruiterEmail: job.recruiterEmail,
-      studentName: student.name,
-      studentEmail: student.email,
-      studentCourse: student.course,
-      appliedOn: new Date().toLocaleDateString("en-IN"),
-    };
-
-    const updatedApplications = [...applications, newApplication];
-    localStorage.setItem("applications", JSON.stringify(updatedApplications));
-
-    alert("✅ Application submitted successfully!");
   };
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-2xl shadow">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-        Available Jobs
-      </h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Available Jobs</h2>
 
       {jobs.length === 0 ? (
         <p className="text-gray-600">No jobs posted yet.</p>
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
-          {jobs.map((job) => (
-            <div
-              key={job.id}
-              className="border rounded-xl p-5 shadow hover:shadow-lg transition"
-            >
-              <h3 className="text-xl font-semibold text-blue-600 mb-2">
-                {job.title}
-              </h3>
-              <p className="text-gray-700 mb-1">
-                <strong>Company:</strong> {job.companyName}
-              </p>
-              <p className="text-gray-700 mb-1">
-                <strong>Location:</strong> {job.location}
-              </p>
-              <p className="text-gray-700 mb-1">
-                <strong>Eligibility:</strong> {job.eligibility}
-              </p>
-              <p className="text-gray-700 mb-1">
-                <strong>Skills:</strong> {job.skillsRequired}
-              </p>
-              <p className="text-gray-700 mb-1">
-                <strong>Salary:</strong> {job.salary || "N/A"}
-              </p>
-              <p className="text-gray-700 mb-1">
-                <strong>HR Contact:</strong> {job.recruiterName}
-              </p>
-              <p className="text-gray-500 text-sm mb-3">
-                <strong>Apply Before:</strong>{" "}
-                {new Date(job.lastDate).toLocaleDateString("en-IN")}
-              </p>
+          {jobs.map((job) => {
+            const alreadyApplied = appliedJobs.includes(job.id);
 
-              <button
-                onClick={() => handleApply(job)}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+            return (
+              <div
+                key={job.id}
+                className="border rounded-xl p-5 shadow hover:shadow-lg transition"
               >
-                Apply Now
-              </button>
-            </div>
-          ))}
+                <h3 className="text-xl font-semibold text-blue-600 mb-2">
+                  {job.title}
+                </h3>
+                <p className="text-gray-700 mb-1">
+                  <strong>Company:</strong> {job.companyName}
+                </p>
+                <p className="text-gray-700 mb-1">
+                  <strong>Location:</strong> {job.location}
+                </p>
+                <p className="text-gray-700 mb-1">
+                  <strong>Eligibility:</strong> {job.eligibility}
+                </p>
+                <p className="text-gray-700 mb-1">
+                  <strong>Skills:</strong> {job.skillsRequired}
+                </p>
+                <p className="text-gray-700 mb-1">
+                  <strong>Salary:</strong> {job.salary}
+                </p>
+                <p className="text-gray-700 mb-1">
+                  <strong>HR Contact:</strong> {job.recruiterName}
+                </p>
+                <p className="text-gray-500 text-sm mb-3">
+                  <strong>Apply Before:</strong>{" "}
+                  {new Date(job.lastDate).toLocaleDateString("en-IN")}
+                </p>
+
+                <button
+                  onClick={() => handleApply(job.id)}
+                  disabled={alreadyApplied}
+                  className={`px-4 py-2 rounded-lg transition ${
+                    alreadyApplied
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 text-white hover:bg-green-700"
+                  }`}
+                >
+                  {alreadyApplied ? "Applied" : "Apply Now"}
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
