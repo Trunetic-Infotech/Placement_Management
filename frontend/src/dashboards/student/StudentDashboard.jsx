@@ -1,5 +1,5 @@
 // StudentDashboard.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
@@ -8,29 +8,96 @@ import StudentProfileForm from "./StudentProfileForm";
 import JobOpenings from "./JobOpenings";
 import StudentApplications from "./StudentApplications";
 import PlacementResults from "./PlacementResults";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 function StudentDashboard({ onLogout, user }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const [studentProfile, setStudent] = useState([]);
+  const [jobCounts, setJobCounts] = useState([]);
+
+  const fetchStudentsData = async()=>{
+    try {
+      const token = localStorage.getItem("token");
+      
+      console.log(`${import.meta.env.VITE_URL}/student/get/student/profile`);
+      
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/student/get/student/profile`,{
+        headers: {
+          Authorization: `${token}`
+        }
+      })
+
+      
+
+      if(response.data.success){
+        setStudent(response.data.data)
+      }else{
+        
+         toast.error(response.data?.message || "User Not Found!", {
+          style: {
+            border: "1px solid #DC2626", // red-600
+            background: "#FEF2F2", // red-50
+            color: "#7F1D1D", // red-900
+            padding: "12px 16px",
+            borderRadius: "10px",
+            fontWeight: "500",
+          },
+          iconTheme: {
+            primary: "#DC2626",
+            secondary: "#FEF2F2",
+          },
+        });
+      }
+    } catch (error) {
+       console.error(error);
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again.",
+        {
+          style: {
+            border: "1px solid #DC2626", // red-600
+            background: "#FEF2F2", // red-50
+            color: "#7F1D1D", // red-900
+            padding: "12px 16px",
+            borderRadius: "10px",
+            fontWeight: "500",
+          },
+          iconTheme: {
+            primary: "#DC2626",
+            secondary: "#FEF2F2",
+          },
+        }
+      );
+    }
+  }
+
+  const fetchStudentsJobCounts = async()=>{
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/student/get-job-counts`,{
+        headers: {
+          Authorization: `${token}`,
+        }
+      })
+
+      if(response.data.success){
+        setJobCounts(response.data.data)
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Error while fetching job count data");
+    }
+  }
+
+  useEffect(()=>{
+    fetchStudentsData();
+    fetchStudentsJobCounts();
+  },[])
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // Dummy student data
-  const studentProfile = {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-    rollNo: "CS101",
-    phone: "9876543210",
-    department: "Computer Science",
-    course: "B.Tech",
-    cgpa: "9.2",
-    skills: "React, Node.js",
-    profileImage: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-    resume:
-      "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    certificate:
-      "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-  };
+
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -65,7 +132,7 @@ function StudentDashboard({ onLogout, user }) {
                   </h1>
                   <div className="flex items-center gap-6 mb-6">
                     <img
-                      src={studentProfile.profileImage}
+                      src={studentProfile.photo_url}
                       alt="Profile"
                       className="w-24 h-24 rounded-full border shadow-sm object-cover"
                     />
@@ -83,8 +150,8 @@ function StudentDashboard({ onLogout, user }) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                       { label: "Email", value: studentProfile.email },
-                      { label: "Roll No", value: studentProfile.rollNo },
-                      { label: "Phone", value: studentProfile.phone },
+                      { label: "Roll No", value: studentProfile.roll_no },
+                      { label: "Phone", value: studentProfile.phoneNumber },
                       { label: "CGPA", value: studentProfile.cgpa },
                       { label: "Skills", value: studentProfile.skills },
                     ].map((field, idx) => (
@@ -106,7 +173,7 @@ function StudentDashboard({ onLogout, user }) {
                         <p className="font-medium text-gray-800">Available</p>
                       </div>
                       <a
-                        href={studentProfile.resume}
+                        href={studentProfile.resume_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-blue-600 hover:underline"
@@ -122,7 +189,7 @@ function StudentDashboard({ onLogout, user }) {
                         <p className="font-medium text-gray-800">Available</p>
                       </div>
                       <a
-                        href={studentProfile.certificate}
+                        href={studentProfile.certificate_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-green-600 hover:underline"
@@ -139,25 +206,25 @@ function StudentDashboard({ onLogout, user }) {
                     <h2 className="text-lg font-semibold text-gray-700">
                       Total Applications
                     </h2>
-                    <p className="text-3xl font-bold text-blue-600 mt-2">12</p>
+                    <p className="text-3xl font-bold text-blue-600 mt-2">{jobCounts.totalApplications}</p>
                   </div>
                   <div className="bg-white p-4 rounded-2xl shadow text-center">
                     <h2 className="text-lg font-semibold text-gray-700">
                       Jobs Applied
                     </h2>
-                    <p className="text-3xl font-bold text-green-600 mt-2">8</p>
+                    <p className="text-3xl font-bold text-green-600 mt-2">{jobCounts.totalJobsApplied}</p>
                   </div>
                   <div className="bg-white p-4 rounded-2xl shadow text-center">
                     <h2 className="text-lg font-semibold text-gray-700">
                       Jobs Shortlisted
                     </h2>
-                    <p className="text-3xl font-bold text-purple-600 mt-2">3</p>
+                    <p className="text-3xl font-bold text-purple-600 mt-2">{jobCounts.totalJobsShortlisted}</p>
                   </div>
                   <div className="bg-white p-4 rounded-2xl shadow text-center">
                     <h2 className="text-lg font-semibold text-gray-700">
                       Placed
                     </h2>
-                    <p className="text-3xl font-bold text-green-800 mt-2">1</p>
+                    <p className="text-3xl font-bold text-green-800 mt-2">{jobCounts.totalJobsPlaced}</p>
                   </div>
                 </div>
               </div>

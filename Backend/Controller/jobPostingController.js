@@ -116,6 +116,40 @@ export const getAllJobs = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+export const getAllJobsForStudents = async (req, res) => {
+  try {
+    //  Page & limit from query params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    //  Get total count for pagination info
+    const [countResult] = await job_postings.query(
+      "SELECT COUNT(*) AS total FROM job_postings"
+    );
+    const totalJobs = countResult[0].total;
+    const totalPages = Math.ceil(totalJobs / limit);
+
+    //  Fetch paginated jobs
+    const [rows] = await job_postings.query(
+      "SELECT jp.*, cd.company_name, r.hr_name FROM job_postings jp LEFT JOIN company_details cd on jp.company_id = cd.company_id LEFT JOIN recruiter r on jp.recruiter_id = r.recruiter_id ORDER BY jp.posted_date DESC LIMIT ? OFFSET ?",
+      [limit, offset]
+    );
+    console.log(rows);
+    
+    res.status(200).json({
+      success: true,
+      currentPage: page,
+      totalPages,
+      totalJobs,
+      count: rows.length,
+      data: rows,
+    });
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // 🟧 Get Job by ID
 export const getJobById = async (req, res) => {

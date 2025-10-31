@@ -13,15 +13,17 @@ import {
   authorizeRoles,
   verifyToken,
 } from "../middleware/recruiterAuthMiddleware.js";
+import { studentAuthMiddleware } from "../middleware/adminAuthMiddleware.js";
 
 const router = express.Router();
 
 // 🟩 Student — Apply for a Job
 router.post(
   "/jobApply",
-  verifyToken,
-  authorizeRoles("student"),
-  StudentUploadResume,
+  // verifyToken,
+  studentAuthMiddleware,
+  // authorizeRoles("student"),
+  // StudentUploadResume,
   applyForJob
 );
 
@@ -43,9 +45,10 @@ router.get(
 
 // 🟦 Student — View Own Applications
 router.get(
-  "/student/:student_id",
-  verifyToken,
-  authorizeRoles("student"),
+  "/student",
+  // verifyToken,
+  // authorizeRoles("student"),
+  studentAuthMiddleware,
   getApplicationsByStudent
 );
 

@@ -3,6 +3,7 @@ import {
   createJobPosting,
   deleteJobPosting,
   getAllJobs,
+  getAllJobsForStudents,
   getJobById,
   getLatestJobPostings,
   updateJobDetails,
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.post("/jobPost", uploadJobPhoto, createJobPosting);
 router.get("/jobs/all", adminAuthMiddleware, getAllJobs);
+router.get("/jobs/all/students",  getAllJobsForStudents);
 router.get("/jobs/:id", getJobById);
 router.get("/latest-jobs", adminAuthMiddleware, getLatestJobPostings);
 router.put("/update/job/post/:id", updateJobDetails);

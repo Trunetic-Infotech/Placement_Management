@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,14 +16,19 @@ import Register from "./components/Register";
 function App() {
   const [user, setUser] = useState(null);
   
-  const handleLogin = ({ email, role }) => {
-    const userData = { email, role };
+  const handleLogin = (user) => {
+    console.log("Hello", user);
+    
+    const userData = user;
     setUser(userData);
   };
 
   const handleLogout = () => {
-    setUser(null);
-  };
+  setUser(null);
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("token");
+};
+
 
   const ProtectedRoute = ({ children, allowedRoles }) => {
     console.log(children, allowedRoles);
@@ -42,7 +47,14 @@ function App() {
   //   );
   // }
 
-  console.log(user);
+  // console.log(user);
+  useEffect(() => {
+  const data = localStorage.getItem("loggedInUser");
+  if (data) {
+    setUser(JSON.parse(data)); // ✅ convert string to object
+  }
+}, []);
+
   
 
   return (

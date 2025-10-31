@@ -1,4 +1,6 @@
 import student from "../config/db.js";
+import job_applications from "../config/db.js";
+import job_postings from "../config/db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -100,7 +102,7 @@ export const studentLogin = async (req, res) => {
       "SELECT * FROM student WHERE email = ?",
       [email]
     );
-    console.log(rows);
+    // console.log(rows);
 
     if (rows.length === 0)
       return res
@@ -108,7 +110,7 @@ export const studentLogin = async (req, res) => {
         .json({ success: false, message: "User Not Found" });
 
     const foundStudent = rows[0];
-    console.log(foundStudent);
+    // console.log(foundStudent);
 
     const isMatch = await bcrypt.compare(password, foundStudent.password);
     if (!isMatch)
@@ -164,15 +166,22 @@ export const getAllStudents = async (req, res) => {
 // ✅ GET STUDENT BY ID CONTROLLER LOGIC CODE
 export const getStudentById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id  = req.student.student_id;
+    // console.log(req.student);
+    
     const [rows] = await student.query(
       "SELECT * FROM student WHERE student_id = ?",
       [id]
     );
     if (rows.length === 0)
-      return res.status(404).json({ message: "Student not found" });
+      return res.status(404).json({success: false, message: "Student not found" });
 
-    res.status(200).json(rows[0]);
+    // console.log(rows);
+    
+    res.status(200).json({
+      success: true,
+      data: rows[0]
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -216,6 +225,94 @@ export const updateStudentDetails = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateStudentDetailsForStudent = async (req, res) => {
+  try {
+    const id  = req.student.student_id;
+
+    // Fetch existing student record
+    const [existingStudent] = await student.query(
+      "SELECT * FROM student WHERE student_id = ?",
+      [id]
+    );
+
+    if (!existingStudent || existingStudent.length === 0) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    const existing = existingStudent[0];
+
+    // Extract files (if any)
+    const photo = req.files?.photo ? req.files.photo[0].path : null;
+    const resume = req.files?.resume ? req.files.resume[0].path : null;
+    const certificate = req.files?.certificate ? req.files.certificate[0].path : null;
+
+    // Extract text fields
+    const {
+      firstName,
+      lastName,
+      phoneNumber,
+      department,
+      course,
+      cgpa,
+      skills,
+      applied_jobs,
+      status,
+    } = req.body;
+
+    // Safe merge: keep old data if new not provided
+    const updatedData = {
+      firstName: firstName || existing.firstName,
+      lastName: lastName || existing.lastName,
+      phoneNumber: phoneNumber || existing.phoneNumber,
+      department: department || existing.department,
+      course: course || existing.course,
+      cgpa: cgpa || existing.cgpa,
+      skills: skills || existing.skills,
+      applied_jobs: applied_jobs || existing.applied_jobs,
+      status: status || existing.status,
+      photo: photo || existing.photo_url,
+      resume: resume || existing.resume_url,
+      certificate: certificate || existing.certificate_url,
+    };
+
+    // Update query
+    await student.query(
+      `UPDATE student SET 
+        firstName=?, lastName=?, phoneNumber=?, department=?, course=?, cgpa=?, 
+        skills=?, applied_jobs=?, status=?, photo_url=?, resume_url=?, certificate_url=? 
+      WHERE student_id=?`,
+      [
+        updatedData.firstName,
+        updatedData.lastName,
+        updatedData.phoneNumber,
+        updatedData.department,
+        updatedData.course,
+        updatedData.cgpa,
+        updatedData.skills,
+        updatedData.applied_jobs,
+        updatedData.status,
+        updatedData.photo,
+        updatedData.resume,
+        updatedData.certificate,
+        id,
+      ]
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Student details updated successfully",
+      updatedData,
+    });
+  } catch (error) {
+    console.error("Error updating student details:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while updating student details",
+      error: error.message,
+    });
   }
 };
 
@@ -368,3 +465,60 @@ export const getLatestStudents = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+export const getJobCountController = async (req, res) => {
+  try {
+    const student_id = req.student.student_id;
+
+    // ✅ Total job applications (all students)
+    const [totalApplicationsResult] = await job_postings.query(
+      `SELECT COUNT(*) AS totalApplications FROM job_postings`
+    );
+
+    // ✅ Total jobs applied by this student
+    const [totalJobsAppliedResult] = await job_applications.query(
+      `SELECT COUNT(*) AS totalJobsApplied FROM job_applications WHERE student_id = ?`,
+      [student_id]
+    );
+
+    // ✅ Total jobs shortlisted for this student
+    const [totalJobsShortlistedResult] = await job_applications.query(
+      `SELECT COUNT(*) AS totalJobsShortlisted FROM job_applications WHERE student_id = ? AND status = ?`,
+      [student_id, "Shortlisted"]
+    );
+
+    // ✅ Total jobs placed (hired)
+    const [totalJobsPlacedResult] = await job_applications.query(
+      `SELECT COUNT(*) AS totalJobsPlaced FROM job_applications WHERE student_id = ? AND status = ?`,
+      [student_id, "Hired"]
+    );
+
+    // ✅ Extract counts safely
+    const totalApplications = totalApplicationsResult[0]?.totalApplications || 0;
+    const totalJobsApplied = totalJobsAppliedResult[0]?.totalJobsApplied || 0;
+    const totalJobsShortlisted = totalJobsShortlistedResult[0]?.totalJobsShortlisted || 0;
+    const totalJobsPlaced = totalJobsPlacedResult[0]?.totalJobsPlaced || 0;
+    console.log(totalApplications);
+    
+    // ✅ Send response
+    return res.status(200).json({
+      success: true,
+      message: "Job statistics fetched successfully",
+      data: {
+        totalApplications,
+        totalJobsApplied,
+        totalJobsShortlisted,
+        totalJobsPlaced,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching job counts:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching job counts",
+      error: error.message,
+    });
+  }
+};
+
