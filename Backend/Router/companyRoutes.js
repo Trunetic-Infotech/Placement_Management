@@ -21,7 +21,7 @@ router.post(
   registerCompany
 );
 router.post("/login/company", loginCompany);
-router.get("/", adminAuthMiddleware, getAllCompanies);
+router.get("/allCompany", adminAuthMiddleware, getAllCompanies);
 router.get("/getCompanyId/:id", getCompanyById);
 router.put("/updateCompanyDetails/:id", updateCompanyDetails);
 router.put("/updateCompanyLogo/:id", uploadCompanyLogo, updateCompanyLogo);

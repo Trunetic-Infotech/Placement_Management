@@ -19,6 +19,7 @@ export const createJobPosting = async (req, res) => {
       application_deadline,
       status,
     } = req.body;
+    console.log(req.body);
 
     const job_template_photo = req.file?.path || null;
 

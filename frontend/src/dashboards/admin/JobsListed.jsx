@@ -48,6 +48,7 @@ function JobsListed() {
         // alert("Job deleted successfully!");
 
         setJobs(jobs.filter((job) => job.job_id !== id));
+        fetchJobs();
       }
     } catch (error) {
       console.error("Delete error:", error);
@@ -57,58 +58,66 @@ function JobsListed() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-2xl shadow">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">
         Manage All Posted Jobs
       </h2>
 
       {jobs.length === 0 ? (
         <p className="text-gray-600">No jobs available.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="py-2 px-4 text-left">Title</th>
-                <th className="py-2 px-4 text-left">Location</th>
-                <th className="py-2 px-4 text-left">Salary</th>
-                <th className="py-2 px-4 text-left">Skills Required</th>
-                <th className="py-2 px-4 text-left">Qualified required</th>
-                <th className="py-2 px-4 text-left">Job Type</th>
-                <th className="py-2 px-4 text-left">Work Mode</th>
-                <th className="py-2 px-4 text-left">Openings</th>
-                <th className="py-2 px-4 text-left">Last Date</th>
-                <th className="py-2 px-4 text-left">Status</th>
-                <th className="py-2 px-4 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map((job) => (
-                <tr key={job.id} className="border-b hover:bg-gray-50">
-                  <td className="py-2 px-4">{job.job_title}</td>
-                  <td className="py-2 px-4">{job.job_location}</td>
-                  <td className="py-2 px-4">{job.salary_range}</td>
-                  <td className="py-2 px-4">{job.skills_required}</td>
-                  <td className="py-2 px-4">{job.qualification_required}</td>
-                  <td className="py-2 px-4">{job.job_type}</td>
-                  <td className="py-2 px-4">{job.work_mode}</td>
-                  <td className="py-2 px-4">{job.openings}</td>
-                  <td className="py-2 px-4">
-                    {new Date(job.application_deadline).toLocaleDateString(
-                      "en-IN"
-                    )}
-                  </td>
-                  <td className="py-2 px-4">{job.status}</td>
-                  <td className="py-2 px-4">
-                    <button
-                      onClick={() => handleDelete(job.job_id)}
-                      className="text-red-600 hover:text-red-700 font-semibold">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {jobs.map((job) => (
+            <div
+              key={job.job_id}
+              className="border rounded-xl p-5 shadow hover:shadow-lg transition bg-white">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {job.job_title}
+              </h3>
+
+              <p className="text-sm text-gray-600 mb-1">
+                📍 <strong>Location:</strong> {job.job_location}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                💰 <strong>Salary:</strong> {job.salary_range}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                🎯 <strong>Skills:</strong> {job.skills_required}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                🎓 <strong>Qualification:</strong> {job.qualification_required}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                🏢 <strong>Job Type:</strong> {job.job_type}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                💼 <strong>Work Mode:</strong> {job.work_mode}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                👥 <strong>Openings:</strong> {job.openings}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-1">
+                📅 <strong>Deadline:</strong>{" "}
+                {new Date(job.application_deadline).toLocaleDateString("en-IN")}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-3">
+                ✅ <strong>Status:</strong> {job.status}
+              </p>
+
+              <button
+                onClick={() => handleDelete(job.job_id)}
+                className="w-full bg-red-100 text-red-600 hover:bg-red-200 transition font-semibold py-2 rounded-md">
+                Delete
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

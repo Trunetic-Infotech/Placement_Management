@@ -15,13 +15,25 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:4000",
+  "http://192.168.1.44:5173"
+];
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
+
 
 app.use(express.json());
 

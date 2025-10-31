@@ -1,238 +1,324 @@
 import React, { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 function AddJobs() {
-  // Dummy recruiter info
-  const recruiter = {
-    hrName: "Rahul Sharma",
-    companyName: "TechNova Solutions",
-  };
-
-  // Job form data
   const [jobData, setJobData] = useState({
-    title: "",
-    description: "",
-    skillsRequired: "",
-    salary: "",
-    location: "",
-    eligibility: "",
-    lastDate: "",
+    recruiter_id: "",
+    company_id: "",
+    job_title: "",
+    job_type: "",
+    work_mode: "",
+    job_location: "",
+    salary_range: "",
+    experience_required: "",
+    skills_required: "",
+    qualification_required: "",
+    job_description: "",
+    openings: "",
+    application_deadline: "",
+    status: "Active",
   });
 
-  // Dummy jobs list
-  const [jobs, setJobs] = useState([
-    {
-      id: 1,
-      title: "Frontend Developer",
-      description: "Develop and maintain UI components using React.js.",
-      skillsRequired: "React, Tailwind, JavaScript",
-      salary: "₹6 LPA",
-      location: "Bangalore",
-      eligibility: "B.Tech / MCA",
-      lastDate: "2025-11-30",
-      recruiterName: recruiter.hrName,
-      companyName: recruiter.companyName,
-    },
-  ]);
+  const [jobTemplate, setJobTemplate] = useState(null);
 
-  // Handle input changes
+  const fetchJobs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/getAllJobs`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        setJobData(res.data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setJobData({ ...jobData, [name]: value });
   };
 
-  // Dummy add handler
-  const handleAddJob = (e) => {
-    e.preventDefault();
-
-    if (
-      !jobData.title ||
-      !jobData.description ||
-      !jobData.skillsRequired ||
-      !jobData.location ||
-      !jobData.eligibility ||
-      !jobData.lastDate
-    ) {
-      alert("Please fill all required fields!");
-      return;
-    }
-
-    const newJob = {
-      id: Date.now(),
-      ...jobData,
-      recruiterName: recruiter.hrName,
-      companyName: recruiter.companyName,
-    };
-
-    setJobs([...jobs, newJob]);
-    setJobData({
-      title: "",
-      description: "",
-      skillsRequired: "",
-      salary: "",
-      location: "",
-      eligibility: "",
-      lastDate: "",
-    });
-
-    alert("✅ Job added successfully! (dummy)");
+  const handleFileChange = (e) => {
+    setJobTemplate(e.target.files[0]);
   };
 
-  // Dummy delete
-  const handleDelete = (id) => {
-    setJobs(jobs.filter((job) => job.id !== id));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    Object.keys(jobData).forEach((key) => {
+      formData.append(key, jobData[key]);
+    });
+
+    if (jobTemplate) {
+      formData.append("job_template_photo", jobTemplate);
+    }
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/jobPost/jobPost`,
+        formData
+      );
+
+      if (res.data.success) {
+        toast.success("✅ Job added successfully!");
+        setJobData({
+          recruiter_id: "",
+          company_id: "",
+          job_title: "",
+          job_type: "",
+          work_mode: "",
+          job_location: "",
+          salary_range: "",
+          experience_required: "",
+          skills_required: "",
+          qualification_required: "",
+          job_description: "",
+          openings: "",
+          application_deadline: "",
+          status: "",
+        });
+        setJobTemplate(null);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to post job");
+    }
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-2xl shadow">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add New Job</h2>
+      <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow">
+        <h2 className="text-xl font-semibold mb-4">Post New Job</h2>
 
-      <p className="mb-4 text-gray-600">
-        <strong>Logged in as:</strong> {recruiter.hrName} ({recruiter.companyName})
-      </p>
-
-      {/* Job Form */}
-      <form
-        onSubmit={handleAddJob}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-      >
-        <div className="md:col-span-2">
-          <label className="font-medium">Job Title</label>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
-            type="text"
-            name="title"
-            value={jobData.title}
+            className="border p-2 rounded"
+            name="recruiter_id"
+            placeholder="Recruiter ID"
+            value={jobData.recruiter_id}
             onChange={handleChange}
-            className="border px-3 py-2 rounded-lg w-full"
             required
           />
-        </div>
 
-        <div className="md:col-span-2">
-          <label className="font-medium">Description</label>
-          <textarea
-            name="description"
-            value={jobData.description}
+          <input
+            className="border p-2 rounded"
+            name="company_id"
+            placeholder="Company ID"
+            value={jobData.company_id}
             onChange={handleChange}
-            className="border px-3 py-2 rounded-lg w-full"
-            rows={4}
             required
           />
-        </div>
 
-        <div>
-          <label className="font-medium">Skills Required</label>
           <input
-            type="text"
-            name="skillsRequired"
-            value={jobData.skillsRequired}
+            className="border p-2 rounded"
+            name="job_title"
+            placeholder="Job Title"
+            value={jobData.job_title}
             onChange={handleChange}
-            className="border px-3 py-2 rounded-lg w-full"
             required
           />
-        </div>
 
-        <div>
-          <label className="font-medium">Salary</label>
           <input
-            type="text"
-            name="salary"
-            value={jobData.salary}
+            className="border p-2 rounded"
+            name="job_type"
+            placeholder="Job Type (FullTime, PartTime...)"
+            value={jobData.job_type}
             onChange={handleChange}
-            className="border px-3 py-2 rounded-lg w-full"
-          />
-        </div>
-
-        <div>
-          <label className="font-medium">Job Location</label>
-          <input
-            type="text"
-            name="location"
-            value={jobData.location}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded-lg w-full"
             required
           />
-        </div>
 
-        <div>
-          <label className="font-medium">Eligibility</label>
           <input
-            type="text"
-            name="eligibility"
-            value={jobData.eligibility}
+            className="border p-2 rounded"
+            name="work_mode"
+            placeholder="Work Mode (OnSite, Remote...)"
+            value={jobData.work_mode}
             onChange={handleChange}
-            className="border px-3 py-2 rounded-lg w-full"
             required
           />
-        </div>
 
-        <div className="md:col-span-2">
-          <label className="font-medium">Last Date to Apply</label>
+          <input
+            className="border p-2 rounded"
+            name="job_location"
+            placeholder="Job Location"
+            value={jobData.job_location}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            className="border p-2 rounded"
+            name="salary_range"
+            placeholder="Salary Range"
+            value={jobData.salary_range}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            className="border p-2 rounded"
+            name="experience_required"
+            placeholder="Experience Required"
+            value={jobData.experience_required}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            className="border p-2 rounded"
+            name="skills_required"
+            placeholder="Skills Required"
+            value={jobData.skills_required}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            className="border p-2 rounded"
+            name="qualification_required"
+            placeholder="Qualification Required"
+            value={jobData.qualification_required}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            className="border p-2 rounded"
+            name="openings"
+            placeholder="Openings"
+            value={jobData.openings}
+            onChange={handleChange}
+            required
+          />
+
           <input
             type="date"
-            name="lastDate"
-            value={jobData.lastDate}
+            className="border p-2 rounded"
+            name="application_deadline"
+            value={jobData.application_deadline}
             onChange={handleChange}
-            className="border px-3 py-2 rounded-lg w-full"
             required
           />
-        </div>
 
-        <div className="md:col-span-2">
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            Add Job
-          </button>
-        </div>
-      </form>
+          <textarea
+            className="border p-2 rounded md:col-span-2"
+            name="job_description"
+            placeholder="Job Description"
+            rows={4}
+            value={jobData.job_description}
+            onChange={handleChange}
+            required
+          />
 
-      {/* Job List */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">My Posted Jobs</h2>
-        {jobs.length === 0 ? (
-          <p className="text-gray-500">No jobs posted yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full border text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-2 px-4 text-left">Job Title</th>
-                  <th className="py-2 px-4 text-left">Description</th>
-                  <th className="py-2 px-4 text-left">Skills</th>
-                  <th className="py-2 px-4 text-left">Location</th>
-                  <th className="py-2 px-4 text-left">Salary</th>
-                  <th className="py-2 px-4 text-left">Eligibility</th>
-                  <th className="py-2 px-4 text-left">Last Date</th>
-                  <th className="py-2 px-4 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map((job) => (
-                  <tr key={job.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-4">{job.title}</td>
-                    <td className="py-2 px-4">{job.description}</td>
-                    <td className="py-2 px-4">{job.skillsRequired}</td>
-                    <td className="py-2 px-4">{job.location}</td>
-                    <td className="py-2 px-4">{job.salary || "N/A"}</td>
-                    <td className="py-2 px-4">{job.eligibility}</td>
-                    <td className="py-2 px-4">{job.lastDate}</td>
-                    <td className="py-2 px-4">
-                      <button
-                        onClick={() => handleDelete(job.id)}
-                        className="text-red-600 hover:text-red-700 font-semibold"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <select
+            name="status"
+            className="border p-2 rounded"
+            value={jobData.status}
+            onChange={handleChange}>
+            <option value="Active">Active</option>
+            <option value="Pending">Pending</option>
+            <option value="Closed">Closed</option>
+          </select>
+
+          <div className="md:col-span-2">
+            <label className="font-medium">Job Template Photo</label>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="border p-2 w-full rounded"
+            />
           </div>
-        )}
+
+          <div className="md:col-span-2 mt-4">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+              Add Job
+            </button>
+          </div>
+        </form>
       </div>
+
+      {/* Job List
+<div className="mt-8">
+  <h2 className="text-xl font-semibold mb-4">My Posted Jobs</h2>
+
+  {jobData.length === 0 ? (
+    <p className="text-gray-500">No jobs posted yet.</p>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="min-w-full border text-sm">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="py-2 px-4 text-left">Job Title</th>
+            <th className="py-2 px-4 text-left">Description</th>
+            <th className="py-2 px-4 text-left">Skills</th>
+            <th className="py-2 px-4 text-left">Location</th>
+            <th className="py-2 px-4 text-left">Salary</th>
+            <th className="py-2 px-4 text-left">Qualification</th>
+            <th className="py-2 px-4 text-left">Deadline</th>
+            <th className="py-2 px-4 text-left">Status</th>
+            <th className="py-2 px-4 text-left">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {jobData.map((job) => (
+            <tr key={job.job_id} className="border-b hover:bg-gray-50">
+              <td className="py-2 px-4">{job.job_title}</td>
+              <td className="py-2 px-4 truncate max-w-60">
+                {job.job_description}
+              </td>
+              <td className="py-2 px-4">{job.skills_required}</td>
+              <td className="py-2 px-4">{job.job_location}</td>
+              <td className="py-2 px-4">{job.salary_range || "N/A"}</td>
+              <td className="py-2 px-4">{job.qualification_required}</td>
+              <td className="py-2 px-4">
+                {new Date(job.application_deadline).toLocaleDateString()}
+              </td>
+              <td className="py-2 px-4">
+                <span
+                  className={`px-2 py-1 rounded text-white text-xs ${
+                    job.status === "Open" ? "bg-green-600" : "bg-red-600"
+                  }`}
+                >
+                  {job.status}
+                </span>
+              </td>
+
+              <td className="py-2 px-4">
+                <button
+                  onClick={() => handleDelete(job.job_id)}
+                  className="text-red-600 hover:text-red-700 font-semibold"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div> */}
     </div>
   );
 }
