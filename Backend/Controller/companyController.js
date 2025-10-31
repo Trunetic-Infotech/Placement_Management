@@ -144,6 +144,7 @@ export const getAllCompanies = async (req, res) => {
     const [companies] = await company_details.execute(
       "SELECT * FROM company_details"
     );
+    
     res.json({ success: true, data: companies });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
